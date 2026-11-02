@@ -85,10 +85,10 @@ export class WorksheetView {
             </div>
             
             <div class="sheet-score-card">
-              <span class="score-caption">Формативное оценивание</span>
+              <span class="score-caption">Критериальное оценивание (ТУП РК)</span>
               <div class="score-value">
-                <span id="totalScoreNum">${currentScore}</span>
-                <span class="score-max">/ 10 баллов</span>
+                <span class="score-status-badge" style="font-size: 13px; font-weight: 600; color: #0369a1; background: #e0f2fe; padding: 4px 10px; border-radius: 4px; display: inline-block;">На проверке учителем</span>
+                <span class="score-max" style="font-size: 12px; color: #64748b; margin-top: 2px;">максимум 10 баллов</span>
               </div>
             </div>
           </div>
@@ -112,24 +112,19 @@ export class WorksheetView {
                 <tr>
                   <th>Проверяемый критерий</th>
                   <th>Дескриптор действия учащегося</th>
-                  <th style="width: 70px; text-align: center;">Балл</th>
-                  <th style="width: 80px; text-align: center;">Отметка</th>
+                  <th style="width: 100px; text-align: center;">Макс. балл</th>
+                  <th style="width: 140px; text-align: center;">Оценка учителя</th>
                 </tr>
               </thead>
               <tbody>
-                ${ws.rubric.map((r, idx) => {
-                  const isChecked = this.isDescriptorAchieved(idx);
-                  return `
-                    <tr class="${isChecked ? 'rubric-row-done' : ''}">
-                      <td class="rubric-criterion">${this.escape(r.criterion)}</td>
-                      <td class="rubric-desc">${this.escape(r.descriptor)}</td>
-                      <td style="text-align: center; font-weight: 600;">${r.points}</td>
-                      <td style="text-align: center;">
-                        <input type="checkbox" class="rubric-check" data-rubric-idx="${idx}" ${isChecked ? 'checked' : ''}>
-                      </td>
-                    </tr>
-                  `;
-                }).join('')}
+                ${ws.rubric.map((r) => `
+                  <tr>
+                    <td class="rubric-criterion">${this.escape(r.criterion)}</td>
+                    <td class="rubric-desc">${this.escape(r.descriptor)}</td>
+                    <td style="text-align: center; font-weight: 600; color: #334155;">${r.points} б.</td>
+                    <td style="text-align: center; color: #94a3b8; font-size: 12px; font-style: italic;">Заполняет учитель</td>
+                  </tr>
+                `).join('')}
               </tbody>
             </table>
           </div>
@@ -770,15 +765,15 @@ export class WorksheetView {
           return;
         }
 
-        const score = this.calculateTotalScore();
         const payload = {
           worksheetId: String(this.worksheet.id),
           worksheetTitle: this.worksheet.title,
           grade: this.worksheet.grade,
           studentName: name,
           studentClass: sClass,
-          score: score,
+          score: 0,
           maxScore: 10,
+          status: 'pending',
           trafficLight: this.studentState.trafficLight || 'yellow',
           answers: this.collectAllAnswers(),
           rubric: this.collectRubricState()
@@ -795,7 +790,7 @@ export class WorksheetView {
               alertEl.style.color = '#166534';
               alertEl.style.border = '1px solid #bbf7d0';
               const cloudNote = res && res.cloudSynced ? ' (синхронизировано с облаком Firebase)' : ' (сохранено в локальном журнале учителя)';
-              alertEl.innerHTML = `✓ <strong>Работа успешно сдана учителю!</strong> Оценка: <strong>${score} из 10</strong> баллов.${cloudNote}`;
+              alertEl.innerHTML = `✓ <strong>Работа успешно сдана учителю на проверку!</strong> Оценка и обратная связь будут выставлены учителем.${cloudNote}`;
             }
           } catch (err) {
             if (alertEl) {
@@ -869,7 +864,7 @@ export class WorksheetView {
           criterion: r.criterion,
           descriptor: r.descriptor,
           points: r.points,
-          achieved: this.isDescriptorAchieved(idx)
+          achieved: false
         };
       });
     }

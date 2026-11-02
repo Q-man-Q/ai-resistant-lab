@@ -118,6 +118,7 @@ export class SubmissionService {
             studentClass: String(enrichedData.studentClass || '').slice(0, 50),
             score: Math.min(10, Math.max(0, Number(enrichedData.score) || 0)),
             maxScore: Number(enrichedData.maxScore) || 10,
+            status: String(enrichedData.status || 'pending').slice(0, 50),
             trafficLight: ['green', 'yellow', 'red'].includes(enrichedData.trafficLight) ? enrichedData.trafficLight : 'yellow',
             answers: enrichedData.answers || {},
             rubric: enrichedData.rubric || {}
@@ -188,6 +189,64 @@ export class SubmissionService {
     localStorage.removeItem(LOCAL_STORAGE_KEY);
   }
 
+  // Обновить оценку и обратную связь учителя для сданной работы
+  async updateSubmissionGrade(subId, updateData) {
+    const local = this.getAllLocal();
+    const idx = local.findIndex(s => s.id === subId || s.cloudId === subId);
+    let updatedSub = null;
+
+    if (idx !== -1) {
+      local[idx] = {
+        ...local[idx],
+        score: Math.min(10, Math.max(0, Number(updateData.score) || 0)),
+        status: 'graded',
+        rubric: updateData.rubric || local[idx].rubric,
+        teacherComment: updateData.teacherComment || '',
+        reviewedAt: new Date().toISOString()
+      };
+      updatedSub = local[idx];
+      try {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(local));
+      } catch (e) {
+        console.error('LocalStorage write failed:', e);
+      }
+    }
+
+    // Если подключен Firebase, синхронизируем выставленную оценку с Firestore
+    if (this.firebaseConfig && updatedSub) {
+      try {
+        if (!this.firestore) await this.initFirebase();
+        if (this.firestore) {
+          const { doc, updateDoc, collection, query, where, getDocs } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+          let docRef = null;
+          if (updatedSub.cloudId) {
+            docRef = doc(this.firestore, 'submissions', updatedSub.cloudId);
+          } else {
+            const q = query(collection(this.firestore, 'submissions'), where('id', '==', subId));
+            const snap = await getDocs(q);
+            if (!snap.empty) {
+              docRef = snap.docs[0].ref;
+            }
+          }
+          if (docRef) {
+            await updateDoc(docRef, {
+              score: Math.min(10, Math.max(0, Number(updateData.score) || 0)),
+              status: 'graded',
+              rubric: updateData.rubric || {},
+              teacherComment: String(updateData.teacherComment || '').slice(0, 1000),
+              reviewedAt: new Date().toISOString()
+            });
+          }
+        }
+      } catch (err) {
+        console.warn('Could not update Firestore submission:', err.message);
+      }
+    }
+
+    this.notifyListeners(updatedSub);
+    return { success: true, submission: updatedSub };
+  }
+
   async signInWithGoogle() {
     if (!this.firebaseApp) await this.initFirebase();
     if (!this.auth) {
@@ -222,7 +281,7 @@ export class SubmissionService {
   exportToCSV(submissions) {
     if (!submissions || submissions.length === 0) return '';
 
-    const headers = ['ID', 'Дата и время', 'Класс', 'ФИО учащегося', 'Номер листа', 'Тема', 'Балл (из 10)', 'Светофор'];
+    const headers = ['ID', 'Дата и время', 'Класс', 'ФИО учащегося', 'Номер листа', 'Тема', 'Статус проверки', 'Балл учителя (из 10)', 'Комментарий учителя', 'Самооценка (Светофор)'];
     const rows = submissions.map(s => [
       `"${s.id || ''}"`,
       `"${s.createdAt ? new Date(s.createdAt).toLocaleString('ru-RU') : ''}"`,
@@ -230,7 +289,9 @@ export class SubmissionService {
       `"${s.studentName || ''}"`,
       `"${s.worksheetId || ''}"`,
       `"${(s.worksheetTitle || '').replace(/"/g, '""')}"`,
-      `"${s.score || 0}"`,
+      `"${s.status === 'graded' ? 'Проверено' : 'На проверке'}"`,
+      `"${s.status === 'graded' ? (s.score || 0) : 'Ожидает'}"`,
+      `"${(s.teacherComment || '').replace(/"/g, '""')}"`,
       `"${s.trafficLight || ''}"`
     ]);
 

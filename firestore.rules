@@ -25,6 +25,9 @@ service cloud.firestore {
     //   - maxScore: number (0-100) - Maximum possible score (default 10)
     //   - answers: map - Student's answered tasks
     //   - rubric: map - Rubric assessment scores
+    //   - status: string (<= 50 characters) - Teacher evaluation status
+    //   - teacherComment: string (<= 1000 characters) - Teacher feedback comment
+    //   - reviewedAt: string (<= 50 characters) or timestamp - Timestamp of teacher review
     //
     // Access Model:
     //   - Anonymous students can CREATE submissions without an account.
@@ -83,7 +86,8 @@ service cloud.firestore {
              hasOnlyAllowedFields([
                'studentName', 'worksheetId', 'score', 'trafficLight',
                'id', 'createdAt', 'worksheetTitle', 'grade',
-               'studentClass', 'maxScore', 'answers', 'rubric'
+               'studentClass', 'maxScore', 'answers', 'rubric',
+               'status', 'teacherComment', 'reviewedAt'
              ]) &&
              // Required fields validation
              data.studentName is string &&
@@ -104,7 +108,10 @@ service cloud.firestore {
              (!('studentClass' in data) || (data.studentClass is string && data.studentClass.size() <= 50)) &&
              (!('maxScore' in data) || (data.maxScore is number && data.maxScore >= 0 && data.maxScore <= 100)) &&
              (!('answers' in data) || data.answers is map) &&
-             (!('rubric' in data) || data.rubric is map);
+             (!('rubric' in data) || data.rubric is map) &&
+             (!('status' in data) || (data.status is string && data.status.size() <= 50)) &&
+             (!('teacherComment' in data) || (data.teacherComment is string && data.teacherComment.size() <= 1000)) &&
+             (!('reviewedAt' in data) || (data.reviewedAt is string && data.reviewedAt.size() <= 50) || data.reviewedAt is timestamp);
     }
 
     function isValidAccessSettings(data) {

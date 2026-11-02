@@ -5,6 +5,7 @@ export class TeacherDashboardView {
     this.container = containerEl;
     this.submissionService = options.submissionService;
     this.teacherAuthService = options.teacherAuthService;
+    this.worksheetStore = options.worksheetStore || null;
     this.onLogout = options.onLogout || (() => {});
     this.submissions = [];
     this.currentFilterClass = 'all';
@@ -375,16 +376,17 @@ export class TeacherDashboardView {
 
   updateStats() {
     const total = this.submissions.length;
-    this.container.querySelector('#statTotalSubmissions').textContent = total;
+    const graded = this.submissions.filter(s => s.status === 'graded');
+    this.container.querySelector('#statTotalSubmissions').textContent = `${total} (проверено: ${graded.length})`;
 
-    if (total === 0) {
-      this.container.querySelector('#statAvgScore').textContent = '0.0';
+    if (graded.length === 0) {
+      this.container.querySelector('#statAvgScore').textContent = '—';
       this.container.querySelector('#statGreenCount').textContent = '🟢 0';
       this.container.querySelector('#statYellowCount').textContent = '🟡 0';
       this.container.querySelector('#statRedCount').textContent = '🔴 0';
     } else {
-      const sum = this.submissions.reduce((acc, s) => acc + (Number(s.score) || 0), 0);
-      this.container.querySelector('#statAvgScore').textContent = (sum / total).toFixed(1);
+      const sum = graded.reduce((acc, s) => acc + (Number(s.score) || 0), 0);
+      this.container.querySelector('#statAvgScore').textContent = (sum / graded.length).toFixed(1);
 
       const greens = this.submissions.filter(s => s.trafficLight === 'green').length;
       const yellows = this.submissions.filter(s => s.trafficLight === 'yellow').length;
@@ -473,18 +475,24 @@ export class TeacherDashboardView {
       const trafficBadge = s.trafficLight === 'green' ? '<span class="traffic-tag green">🟢 Уверенно</span>' :
                            s.trafficLight === 'yellow' ? '<span class="traffic-tag yellow">🟡 Сомнения</span>' :
                            s.trafficLight === 'red' ? '<span class="traffic-tag red">🔴 Нужна помощь</span>' : '-';
-      
+      const isGraded = s.status === 'graded';
+      const scoreBadge = isGraded
+        ? `<strong style="font-size: 15px; color: #15803d;">${s.score || 0}</strong> / 10 <span style="font-size: 11px; color: #16a34a; display: block; font-weight: 500;">✓ Проверено</span>`
+        : `<span style="font-size: 12px; font-weight: 600; color: #b45309; background: #fef3c7; padding: 3px 8px; border-radius: 4px; display: inline-block;">⏳ Ожидает</span>`;
+      const btnLabel = isGraded ? 'Изменить оценку' : 'Оценить работу';
+      const btnClass = isGraded ? 'btn-secondary' : 'btn-primary';
+
       return `
         <tr>
           <td style="font-size: 13px; color: #64748b;">${dateStr}</td>
           <td><span class="badge-class">${escapeHtml(s.studentClass || '-')}</span></td>
           <td style="font-weight: 600; color: #1e293b;">${escapeHtml(s.studentName || 'Без имени')}</td>
           <td style="font-size: 13px;">№${s.worksheetId} ${escapeHtml(s.worksheetTitle || '')}</td>
-          <td style="text-align: center;"><strong style="font-size: 15px; color: #0284c7;">${s.score || 0}</strong> / 10</td>
+          <td style="text-align: center;">${scoreBadge}</td>
           <td style="text-align: center;">${trafficBadge}</td>
           <td style="text-align: right;">
-            <button class="btn btn-sm btn-outline btn-view-submission" data-sub-idx="${idx}">
-              Проверить работу
+            <button class="btn btn-sm ${btnClass} btn-view-submission" data-sub-idx="${idx}">
+              ${btnLabel}
             </button>
           </td>
         </tr>
@@ -502,13 +510,13 @@ export class TeacherDashboardView {
   openReviewModal(sub) {
     if (!sub) return;
 
-    this.container.querySelector('#reviewModalTitle').textContent = `Работа: ${sub.studentName} (${sub.studentClass || 'Класс не указан'})`;
+    this.container.querySelector('#reviewModalTitle').textContent = `Проверка работы: ${sub.studentName} (${sub.studentClass || 'Класс не указан'})`;
     const body = this.container.querySelector('#reviewModalBody');
 
     const answers = sub.answers || {};
     let answersHtml = '';
 
-    // Формируем список ответов
+    // Формируем список ответов учащегося
     const answerKeys = Object.keys(answers);
     if (answerKeys.length === 0) {
       answersHtml = '<p style="color: #64748b;">Учащийся не заполнил текстовые поля перед отправкой.</p>';
@@ -533,11 +541,27 @@ export class TeacherDashboardView {
       }).join('');
     }
 
+    // Получаем критерии оценивания из банка листов или из сдачи
+    let rubricItems = [];
+    if (this.worksheetStore) {
+      const ws = this.worksheetStore.getById(sub.worksheetId);
+      if (ws && ws.rubric) {
+        rubricItems = ws.rubric;
+      }
+    }
+    if (rubricItems.length === 0 && sub.rubric) {
+      rubricItems = Object.keys(sub.rubric).map(k => sub.rubric[k]);
+    }
+
+    const subRubricState = sub.rubric || {};
+    const isGraded = sub.status === 'graded';
+    const initialScore = isGraded ? (Number(sub.score) || 0) : 0;
+
     body.innerHTML = `
       <div class="review-meta-bar">
         <div><strong>Лист:</strong> №${sub.worksheetId} ${escapeHtml(sub.worksheetTitle || '')}</div>
         <div><strong>Время сдачи:</strong> ${new Date(sub.createdAt).toLocaleString('ru-RU')}</div>
-        <div><strong>Итоговый балл:</strong> <span style="font-size: 16px; font-weight: 700; color: #0284c7;">${sub.score || 0} из 10</span></div>
+        <div><strong>Статус:</strong> ${isGraded ? '<span style="color: #16a34a; font-weight: 700;">✓ Проверено учителем</span>' : '<span style="color: #d97706; font-weight: 700;">⏳ Ожидает проверки</span>'}</div>
         <div><strong>Самооценка (Светофор):</strong> ${sub.trafficLight === 'green' ? '🟢 Уверенно' : sub.trafficLight === 'yellow' ? '🟡 Были сомнения' : '🔴 Требуется помощь'}</div>
       </div>
 
@@ -545,7 +569,121 @@ export class TeacherDashboardView {
       <div class="review-answers-container">
         ${answersHtml}
       </div>
+
+      <!-- Панель оценивания дескрипторов учителем -->
+      <div style="margin-top: 24px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 18px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
+          <div>
+            <h4 style="font-size: 15px; font-weight: 700; color: #0f172a; margin: 0;">Критериальное оценивание учителем (Дескрипторы ТУП РК):</h4>
+            <p style="font-size: 12px; color: #64748b; margin: 2px 0 0;">Отметьте галочками дескрипторы, достигнутые учащимся в ходе выполнения работы.</p>
+          </div>
+          <div style="font-size: 16px; font-weight: 700; color: #0284c7; background: #e0f2fe; padding: 6px 14px; border-radius: 6px;">
+            Балл учителя: <span id="modalLiveScore">${initialScore}</span> / 10
+          </div>
+        </div>
+
+        <table class="rubric-table" style="background: #fff; width: 100%; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden;">
+          <thead>
+            <tr>
+              <th>Проверяемый критерий</th>
+              <th>Дескриптор учебного действия</th>
+              <th style="width: 85px; text-align: center;">Балл</th>
+              <th style="width: 120px; text-align: center;">Отметка учителя</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rubricItems.map((r, idx) => {
+              const key = `rubric_${idx}`;
+              const isAchieved = subRubricState[key] ? !!subRubricState[key].achieved : false;
+              return `
+                <tr>
+                  <td class="rubric-criterion">${escapeHtml(r.criterion)}</td>
+                  <td class="rubric-desc">${escapeHtml(r.descriptor)}</td>
+                  <td style="text-align: center; font-weight: 600; color: #334155;">${r.points} б.</td>
+                  <td style="text-align: center;">
+                    <label style="cursor: pointer; display: inline-flex; align-items: center; justify-content: center; width: 100%;">
+                      <input type="checkbox" class="teacher-rubric-chk" data-idx="${idx}" data-points="${r.points}" ${isAchieved ? 'checked' : ''} style="width: 18px; height: 18px; cursor: pointer;">
+                    </label>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+
+        <label style="display: block; margin-top: 16px; font-size: 13px; font-weight: 600; color: #334155;">
+          Обратная связь / комментарий учителя:
+          <textarea id="modalTeacherComment" class="app-textarea" rows="2" style="width: 100%; margin-top: 6px;" placeholder="Например: Отличный анализ цикла, обратите внимание на тип переменной в шаге 2...">${escapeHtml(sub.teacherComment || '')}</textarea>
+        </label>
+
+        <div style="margin-top: 16px; display: flex; justify-content: flex-end; gap: 10px;">
+          <button class="btn btn-primary" id="btnSaveTeacherGrade" style="background: #16a34a; border-color: #16a34a; font-weight: 600; padding: 10px 22px; font-size: 14px;">
+            ✓ Сохранить оценку и комментарий в ведомость
+          </button>
+        </div>
+      </div>
     `;
+
+    // Подсчет баллов в реальном времени при клике на дескриптор
+    const liveScoreEl = body.querySelector('#modalLiveScore');
+    const checkboxes = body.querySelectorAll('.teacher-rubric-chk');
+
+    const updateLiveScore = () => {
+      let sum = 0;
+      checkboxes.forEach(chk => {
+        if (chk.checked) sum += (Number(chk.dataset.points) || 0);
+      });
+      if (liveScoreEl) liveScoreEl.textContent = Math.min(10, Math.max(0, sum));
+    };
+
+    checkboxes.forEach(chk => {
+      chk.addEventListener('change', updateLiveScore);
+    });
+
+    // Сохранение оценки учителем
+    const btnSave = body.querySelector('#btnSaveTeacherGrade');
+    if (btnSave) {
+      btnSave.addEventListener('click', async () => {
+        let total = 0;
+        const updatedRubric = {};
+
+        rubricItems.forEach((r, idx) => {
+          const chk = body.querySelector(`.teacher-rubric-chk[data-idx="${idx}"]`);
+          const isChecked = chk ? chk.checked : false;
+          if (isChecked) total += (Number(r.points) || 0);
+          updatedRubric[`rubric_${idx}`] = {
+            criterion: r.criterion,
+            descriptor: r.descriptor,
+            points: r.points,
+            achieved: isChecked
+          };
+        });
+
+        total = Math.min(10, Math.max(0, total));
+        const comment = (body.querySelector('#modalTeacherComment').value || '').trim();
+
+        btnSave.disabled = true;
+        btnSave.textContent = 'Сохранение...';
+
+        try {
+          await this.submissionService.updateSubmissionGrade(sub.id, {
+            score: total,
+            status: 'graded',
+            rubric: updatedRubric,
+            teacherComment: comment
+          });
+
+          await this.refresh();
+          alert(`✓ Оценка (${total} из 10) успешно выставлена и сохранена в ведомость!`);
+          this.container.querySelector('#reviewModal').style.display = 'none';
+        } catch (err) {
+          alert('Ошибка сохранения оценки: ' + err.message);
+        } finally {
+          btnSave.disabled = false;
+          btnSave.textContent = '✓ Сохранить оценку и комментарий в ведомость';
+        }
+      });
+    }
 
     this.container.querySelector('#reviewModal').style.display = 'flex';
   }

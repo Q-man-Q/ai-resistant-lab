@@ -97,6 +97,7 @@ print("Максимум:", max_val)`;
     this.teacherView = new TeacherDashboardView(this.dom.teacherContainer, {
       submissionService: this.submissionService,
       teacherAuthService: this.teacherAuthService,
+      worksheetStore: this.store,
       onLogout: () => {
         this.updateTeacherAuthUI();
         this.switchTab('worksheet');

@@ -39,4 +39,19 @@ test('SubmissionService: saves submission locally and exports CSV', async () => 
   const csv = service.exportToCSV(list);
   assert.ok(csv.includes('Арман Сериков'));
   assert.ok(csv.includes('7 А'));
+
+  // Test teacher grading update
+  const gradeRes = await service.updateSubmissionGrade(res.id, {
+    score: 8,
+    teacherComment: 'Отличная работа!',
+    rubric: { rubric_0: { points: 8, achieved: true } }
+  });
+  assert.equal(gradeRes.success, true);
+  assert.equal(gradeRes.submission.score, 8);
+  assert.equal(gradeRes.submission.status, 'graded');
+  assert.equal(gradeRes.submission.teacherComment, 'Отличная работа!');
+
+  const updatedList = await service.getAllSubmissions();
+  assert.equal(updatedList[0].score, 8);
+  assert.equal(updatedList[0].status, 'graded');
 });
