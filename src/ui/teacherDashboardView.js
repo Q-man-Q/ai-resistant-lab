@@ -4,6 +4,8 @@ export class TeacherDashboardView {
   constructor(containerEl, options = {}) {
     this.container = containerEl;
     this.submissionService = options.submissionService;
+    this.teacherAuthService = options.teacherAuthService;
+    this.onLogout = options.onLogout || (() => {});
     this.submissions = [];
     this.currentFilterClass = 'all';
     this.currentFilterSheet = 'all';
@@ -35,8 +37,21 @@ export class TeacherDashboardView {
               </svg>
               <span>Экспорт ведомости (CSV)</span>
             </button>
+            <button class="btn btn-secondary" id="btnChangePin" title="Сменить мастер-PIN для входа учителя">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+              </svg>
+              <span>Сменить PIN</span>
+            </button>
             <button class="btn btn-ghost" id="btnClearSubmissions" title="Очистить локальный журнал сданных работ">
               <span>Очистить журнал</span>
+            </button>
+            <button class="btn btn-secondary" id="btnTeacherLogout" style="color: #b91c1c; border-color: #fca5a5;" title="Заблокировать кабинет и выйти в режим ученика">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+                <path d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+              </svg>
+              <span>Выйти из кабинета</span>
             </button>
           </div>
         </div>
@@ -147,6 +162,40 @@ export class TeacherDashboardView {
           </div>
         </div>
       </div>
+
+      <!-- Модальное окно смены PIN-кода учителя -->
+      <div class="modal-backdrop" id="changePinModal" style="display: none;">
+        <div class="modal-dialog" style="max-width: 420px;">
+          <div class="modal-header">
+            <h3 class="modal-title">Смена PIN-кода кабинета учителя</h3>
+            <button class="btn btn-ghost" id="btnCloseChangePinModal">✕</button>
+          </div>
+          <div class="modal-body">
+            <p style="font-size: 13px; color: #475569; margin-bottom: 14px;">
+              Задайте новый секретный PIN-код для предотвращения несанкционированного доступа учащихся к журналу.
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <label style="display: block;">
+                <span style="font-size: 13px; font-weight: 500; color: #334155;">Текущий PIN-код:</span>
+                <input type="password" id="inputOldPin" class="app-select" style="width: 100%; margin-top: 4px;" placeholder="По умолчанию: 2026" autocomplete="off">
+              </label>
+              <label style="display: block;">
+                <span style="font-size: 13px; font-weight: 500; color: #334155;">Новый PIN-код (от 4 символов):</span>
+                <input type="password" id="inputNewPin" class="app-select" style="width: 100%; margin-top: 4px;" placeholder="Новый PIN" autocomplete="off">
+              </label>
+              <label style="display: block;">
+                <span style="font-size: 13px; font-weight: 500; color: #334155;">Повторите новый PIN-код:</span>
+                <input type="password" id="inputConfirmPin" class="app-select" style="width: 100%; margin-top: 4px;" placeholder="Повтор нового PIN" autocomplete="off">
+              </label>
+              <div id="changePinError" style="display: none; color: #dc2626; font-size: 13px; background: #fef2f2; padding: 8px 12px; border-radius: 6px; border: 1px solid #fecaca;"></div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-ghost" id="btnCancelChangePin">Отмена</button>
+            <button class="btn btn-primary" id="btnSaveChangePin">Сохранить новый PIN</button>
+          </div>
+        </div>
+      </div>
     `;
   }
 
@@ -237,6 +286,66 @@ export class TeacherDashboardView {
       window.print();
     });
 
+    // Выход из кабинета учителя
+    const btnLogout = this.container.querySelector('#btnTeacherLogout');
+    if (btnLogout) {
+      btnLogout.addEventListener('click', () => {
+        if (confirm('Выйти из режима учителя и заблокировать журнал?')) {
+          if (this.teacherAuthService) {
+            this.teacherAuthService.logout();
+          }
+          this.onLogout();
+        }
+      });
+    }
+
+    // Смена PIN-кода
+    const changePinModal = this.container.querySelector('#changePinModal');
+    const btnOpenChangePin = this.container.querySelector('#btnChangePin');
+    const btnCloseChangePin = this.container.querySelector('#btnCloseChangePinModal');
+    const btnCancelChangePin = this.container.querySelector('#btnCancelChangePin');
+    const btnSaveChangePin = this.container.querySelector('#btnSaveChangePin');
+    const changePinError = this.container.querySelector('#changePinError');
+
+    const openPinModal = () => {
+      this.container.querySelector('#inputOldPin').value = '';
+      this.container.querySelector('#inputNewPin').value = '';
+      this.container.querySelector('#inputConfirmPin').value = '';
+      changePinError.style.display = 'none';
+      changePinModal.style.display = 'flex';
+    };
+
+    const closePinModal = () => {
+      changePinModal.style.display = 'none';
+    };
+
+    if (btnOpenChangePin) btnOpenChangePin.addEventListener('click', openPinModal);
+    if (btnCloseChangePin) btnCloseChangePin.addEventListener('click', closePinModal);
+    if (btnCancelChangePin) btnCancelChangePin.addEventListener('click', closePinModal);
+
+    if (btnSaveChangePin) {
+      btnSaveChangePin.addEventListener('click', () => {
+        const oldPin = this.container.querySelector('#inputOldPin').value;
+        const newPin = this.container.querySelector('#inputNewPin').value;
+        const confirmPin = this.container.querySelector('#inputConfirmPin').value;
+
+        if (!this.teacherAuthService) {
+          alert('Сервис авторизации недоступен.');
+          return;
+        }
+
+        const res = this.teacherAuthService.changePin(oldPin, newPin, confirmPin);
+        if (!res.success) {
+          changePinError.style.display = 'block';
+          changePinError.textContent = res.error || 'Ошибка смены PIN-кода';
+          return;
+        }
+
+        alert('✓ PIN-код учителя успешно обновлен!');
+        closePinModal();
+      });
+    }
+
     // Подписка на новые сдачи
     this.submissionService.onNewSubmission(() => {
       this.refresh();
@@ -244,6 +353,12 @@ export class TeacherDashboardView {
   }
 
   async refresh() {
+    if (this.teacherAuthService && !this.teacherAuthService.isTeacher()) {
+      this.submissions = [];
+      this.updateStats();
+      this.renderTable();
+      return;
+    }
     this.submissions = await this.submissionService.getAllSubmissions();
     this.updateStats();
     this.updateFilters();

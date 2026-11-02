@@ -6,13 +6,15 @@ import { WorksheetView } from './worksheetView.js';
 import { VisualizerView } from './visualizerView.js';
 import { SubmissionService } from '../services/submissionService.js';
 import { TeacherDashboardView } from './teacherDashboardView.js';
+import { TeacherAuthService } from '../services/teacherAuthService.js';
 
 export class App {
   constructor() {
     this.store = new WorksheetStore();
     this.submissionService = new SubmissionService();
+    this.teacherAuthService = new TeacherAuthService();
     this.currentSheetId = 1;
-    this.currentTab = 'worksheet'; // 'worksheet' | 'visualizer' | 'sandbox'
+    this.currentTab = 'worksheet'; // 'worksheet' | 'visualizer' | 'sandbox' | 'teacher'
     this.customSandboxCode = `numbers = [3, 8, 1, 6, 2]
 max_val = numbers[0]
 for x in numbers:
@@ -49,11 +51,23 @@ print("Максимум:", max_val)`;
       btnAbout: document.querySelector('#btnAbout'),
       aboutModal: document.querySelector('#aboutModal'),
       btnCloseModal: document.querySelector('#btnCloseModal'),
-      btnCloseAboutBtn: document.querySelector('#btnCloseAboutBtn')
+      btnCloseAboutBtn: document.querySelector('#btnCloseAboutBtn'),
+
+      // Авторизация учителя
+      btnTeacherAuth: document.querySelector('#btnTeacherAuth'),
+      teacherAuthBtnText: document.querySelector('#teacherAuthBtnText'),
+      teacherAuthIcon: document.querySelector('#teacherAuthIcon'),
+      teacherAuthModal: document.querySelector('#teacherAuthModal'),
+      btnCloseTeacherAuthModal: document.querySelector('#btnCloseTeacherAuthModal'),
+      btnCancelTeacherAuth: document.querySelector('#btnCancelTeacherAuth'),
+      btnSubmitTeacherAuth: document.querySelector('#btnSubmitTeacherAuth'),
+      teacherPinInput: document.querySelector('#teacherPinInput'),
+      teacherAuthError: document.querySelector('#teacherAuthError')
     };
 
     this.initViews();
     this.populateSheetSelect();
+    this.updateTeacherAuthUI();
     this.bindEvents();
 
     this.store.onChange(() => {
@@ -79,7 +93,12 @@ print("Максимум:", max_val)`;
     this.visualizerView = new VisualizerView(this.dom.visualizerContainer);
 
     this.teacherView = new TeacherDashboardView(this.dom.teacherContainer, {
-      submissionService: this.submissionService
+      submissionService: this.submissionService,
+      teacherAuthService: this.teacherAuthService,
+      onLogout: () => {
+        this.updateTeacherAuthUI();
+        this.switchTab('worksheet');
+      }
     });
   }
 
@@ -121,6 +140,45 @@ print("Максимум:", max_val)`;
     this.dom.tabSandbox.addEventListener('click', () => this.switchTab('sandbox'));
     if (this.dom.tabTeacher) {
       this.dom.tabTeacher.addEventListener('click', () => this.switchTab('teacher'));
+    }
+
+    // Вход / выход учителя
+    if (this.dom.btnTeacherAuth) {
+      this.dom.btnTeacherAuth.addEventListener('click', () => {
+        if (this.teacherAuthService.isTeacher()) {
+          if (confirm('Выйти из режима учителя и заблокировать журнал?')) {
+            this.teacherAuthService.logout();
+            this.updateTeacherAuthUI();
+            this.switchTab('worksheet');
+          }
+        } else {
+          this.openTeacherAuthModal();
+        }
+      });
+    }
+
+    if (this.dom.btnCloseTeacherAuthModal) {
+      this.dom.btnCloseTeacherAuthModal.addEventListener('click', () => this.closeTeacherAuthModal());
+    }
+    if (this.dom.btnCancelTeacherAuth) {
+      this.dom.btnCancelTeacherAuth.addEventListener('click', () => this.closeTeacherAuthModal());
+    }
+    if (this.dom.teacherAuthModal) {
+      this.dom.teacherAuthModal.addEventListener('click', (e) => {
+        if (e.target === this.dom.teacherAuthModal) this.closeTeacherAuthModal();
+      });
+    }
+
+    if (this.dom.btnSubmitTeacherAuth) {
+      this.dom.btnSubmitTeacherAuth.addEventListener('click', () => this.submitTeacherAuth());
+    }
+    if (this.dom.teacherPinInput) {
+      this.dom.teacherPinInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          this.submitTeacherAuth();
+        }
+      });
     }
 
     const openAbout = () => this.dom.aboutModal.classList.add('open');
@@ -331,6 +389,11 @@ print("Максимум:", max_val)`;
   }
 
   switchTab(tabName) {
+    if (tabName === 'teacher' && !this.teacherAuthService.isTeacher()) {
+      this.openTeacherAuthModal();
+      return;
+    }
+
     this.currentTab = tabName;
 
     this.dom.tabWorksheet.classList.toggle('active', tabName === 'worksheet');
@@ -353,6 +416,57 @@ print("Максимум:", max_val)`;
       this.visualizerView.goToStep(this.visualizerView.currentStepIdx || 0);
     } else if (tabName === 'teacher' && this.teacherView) {
       this.teacherView.refresh();
+    }
+  }
+
+  openTeacherAuthModal() {
+    if (!this.dom.teacherAuthModal) return;
+    if (this.dom.teacherPinInput) this.dom.teacherPinInput.value = '';
+    if (this.dom.teacherAuthError) this.dom.teacherAuthError.style.display = 'none';
+    this.dom.teacherAuthModal.style.display = 'flex';
+    setTimeout(() => {
+      if (this.dom.teacherPinInput) this.dom.teacherPinInput.focus();
+    }, 50);
+  }
+
+  closeTeacherAuthModal() {
+    if (this.dom.teacherAuthModal) {
+      this.dom.teacherAuthModal.style.display = 'none';
+    }
+  }
+
+  submitTeacherAuth() {
+    const pin = (this.dom.teacherPinInput.value || '').trim();
+    const res = this.teacherAuthService.loginWithPin(pin);
+    if (!res.success) {
+      if (this.dom.teacherAuthError) {
+        this.dom.teacherAuthError.style.display = 'block';
+        this.dom.teacherAuthError.textContent = res.error || 'Неверный PIN-код учителя';
+      }
+      if (this.dom.teacherPinInput) this.dom.teacherPinInput.focus();
+      return;
+    }
+    this.closeTeacherAuthModal();
+    this.updateTeacherAuthUI();
+    this.switchTab('teacher');
+  }
+
+  updateTeacherAuthUI() {
+    const isTeacher = this.teacherAuthService.isTeacher();
+    if (this.dom.tabTeacher) {
+      this.dom.tabTeacher.style.display = isTeacher ? 'inline-flex' : 'none';
+    }
+    if (this.dom.teacherAuthBtnText) {
+      this.dom.teacherAuthBtnText.textContent = isTeacher ? 'Выйти из кабинета' : 'Вход для учителя';
+    }
+    if (this.dom.btnTeacherAuth) {
+      if (isTeacher) {
+        this.dom.btnTeacherAuth.style.color = '#dc2626';
+        this.dom.btnTeacherAuth.title = 'Кабинет учителя активен. Нажмите, чтобы выйти и заблокировать журнал.';
+      } else {
+        this.dom.btnTeacherAuth.style.color = '';
+        this.dom.btnTeacherAuth.title = 'Вход в кабинет учителя (защищен PIN-кодом)';
+      }
     }
   }
 

@@ -1,8 +1,114 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: submissions
+    // Document ID: {submissionId} (auto-generated or client-generated string)
+    //
+    // Required Fields:
+    //   - studentName: string (1-100 characters) - Student full name
+    //   - worksheetId: string (1-100 characters) - ID of the completed worksheet
+    //   - score: number (range 0 to 10) - Earned total score
+    //   - trafficLight: string (enum: 'green', 'yellow', 'red') - Student self-assessment
+    //
+    // Optional Fields:
+    //   - id: string (<= 100 characters, immutable) - Internal submission ID
+    //   - createdAt: string (<= 50 characters, immutable) or timestamp - Timestamp of submission
+    //   - worksheetTitle: string (<= 200 characters) - Title of the worksheet
+    //   - grade: number (0-12) - School grade level
+    //   - studentClass: string (<= 50 characters) - Student class identifier
+    //   - maxScore: number (0-100) - Maximum possible score (default 10)
+    //   - answers: map - Student's answered tasks
+    //   - rubric: map - Rubric assessment scores
+    //
+    // Access Model:
+    //   - Anonymous students can CREATE submissions without an account.
+    //   - Only authenticated users (teachers) can READ (list/get), UPDATE, or DELETE submissions.
+    //   - Default deny on all other document paths.
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    // Check if the request is from an authenticated user (Teacher)
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Validate that all required fields are present in the incoming document
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    // Validate that incoming document contains only recognized schema fields
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    // Ensure specified immutable fields are not modified during an update
+    function areImmutableFieldsUnchanged(fields) {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny(fields);
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidSubmission(data) {
+      return hasRequiredFields(['studentName', 'worksheetId', 'score', 'trafficLight']) &&
+             hasOnlyAllowedFields([
+               'studentName', 'worksheetId', 'score', 'trafficLight',
+               'id', 'createdAt', 'worksheetTitle', 'grade',
+               'studentClass', 'maxScore', 'answers', 'rubric'
+             ]) &&
+             // Required fields validation
+             data.studentName is string &&
+             data.studentName.size() >= 1 &&
+             data.studentName.size() <= 100 &&
+             data.worksheetId is string &&
+             data.worksheetId.size() >= 1 &&
+             data.worksheetId.size() <= 100 &&
+             data.score is number &&
+             data.score >= 0 &&
+             data.score <= 10 &&
+             data.trafficLight in ['green', 'yellow', 'red'] &&
+             // Optional fields validation (Type bounds & DoS mitigation)
+             (!('id' in data) || (data.id is string && data.id.size() <= 100)) &&
+             (!('createdAt' in data) || (data.createdAt is string && data.createdAt.size() <= 50) || data.createdAt is timestamp) &&
+             (!('worksheetTitle' in data) || (data.worksheetTitle is string && data.worksheetTitle.size() <= 200)) &&
+             (!('grade' in data) || (data.grade is number && data.grade >= 0 && data.grade <= 12)) &&
+             (!('studentClass' in data) || (data.studentClass is string && data.studentClass.size() <= 50)) &&
+             (!('maxScore' in data) || (data.maxScore is number && data.maxScore >= 0 && data.maxScore <= 100)) &&
+             (!('answers' in data) || data.answers is map) &&
+             (!('rubric' in data) || data.rubric is map);
+    }
+
+    // Default deny for all other document paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Submissions collection rules
     match /submissions/{submissionId} {
-      allow read, write: if true;
+      // 1. Read: Strictly restricted to authenticated teachers (list and get)
+      allow read: if isAuthenticated();
+
+      // 2. Create: Allowed for anyone (anonymous students without accounts) with strict schema validation
+      allow create: if isValidSubmission(request.resource.data);
+
+      // 3. Update: Restricted to authenticated teachers, schema validated and immutable fields protected
+      allow update: if isAuthenticated() &&
+                       isValidSubmission(request.resource.data) &&
+                       areImmutableFieldsUnchanged(['id', 'createdAt']);
+
+      // 4. Delete: Strictly restricted to authenticated teachers
+      allow delete: if isAuthenticated();
     }
   }
 }
