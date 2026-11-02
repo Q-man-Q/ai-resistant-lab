@@ -94,6 +94,14 @@ body {
   letter-spacing: -0.01em;
 }
 
+.brand-title-mobile {
+  display: none !important;
+}
+
+.brand-title-full {
+  display: block;
+}
+
 .brand-text p {
   font-size: 11px;
   color: var(--text-muted);
@@ -358,62 +366,113 @@ body {
 /* Мобильная адаптация интерфейса */
 @media screen and (max-width: 768px) {
   .app-header {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 10px 12px;
-    gap: 10px;
-  }
-
-  .brand-section {
-    justify-content: space-between;
-  }
-
-  .brand-text h1 {
-    font-size: 14px;
-  }
-
-  .brand-text p {
-    font-size: 10px;
-  }
-
-  .header-controls {
-    width: 100%;
-    flex-direction: column;
-    align-items: stretch;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    align-items: center;
+    padding: 8px 10px;
     gap: 8px;
   }
 
-  .sheet-selector-group {
+  .brand-section {
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .brand-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+    border-radius: var(--radius-sm);
+  }
+
+  .brand-icon svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .brand-title-full {
+    display: none !important;
+  }
+
+  .brand-title-mobile {
+    display: block !important;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+    margin: 0;
+  }
+
+  .brand-subtitle {
+    display: none !important;
+  }
+
+  #btnTeacherAuth {
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+    margin: 0;
+    padding: 5px 10px;
+    font-size: 11.5px;
+    font-weight: 600;
+    background-color: var(--bg-subtle);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+  }
+
+  .header-controls {
+    grid-column: 1 / 3;
+    grid-row: 2 / 3;
+    display: flex;
+    align-items: center;
+    gap: 6px;
     width: 100%;
+    margin: 0;
+  }
+
+  .sheet-selector-group {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
   }
 
   .selector-label {
-    display: none;
+    display: none !important;
   }
 
   .app-select {
     width: 100%;
     max-width: 100%;
-    font-size: 13px;
-    padding: 8px 10px;
+    font-size: 12.5px;
+    padding: 6px 8px;
+    text-overflow: ellipsis;
   }
 
   .header-action-buttons {
-    width: 100%;
     display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
   }
 
   .header-action-buttons .btn {
-    flex: 1 1 calc(33.3% - 6px);
-    padding: 8px 6px;
-    font-size: 11px;
+    padding: 6px;
+    min-width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
     justify-content: center;
   }
 
-  #btnTeacherAuth {
-    flex: 1 1 100%;
+  .header-action-buttons .btn span {
+    display: none;
+  }
+
+  #btnTeacherAuth span {
+    display: inline !important;
   }
 
   .app-nav-tabs {
