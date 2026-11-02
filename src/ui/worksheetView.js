@@ -478,7 +478,7 @@ export class WorksheetView {
     return `
       <div class="interactive-constraint-block">
         <div class="constraint-warning-banner">
-          <span class="constraint-title">Дидактические ограничения синтаксиса:</span>
+          <span class="constraint-title">Ограничения по коду (запрещено использовать):</span>
           <div class="banned-tags-list">
             ${banned.map(word => `<span class="banned-tag">ЗАПРЕЩЕНО: <code>${this.escape(word)}</code></span>`).join('')}
           </div>

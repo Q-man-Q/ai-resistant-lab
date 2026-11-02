@@ -182,7 +182,7 @@ export class WorksheetParser {
     switch (type) {
       case 'trace': return 'Ручная пошаговая трассировка';
       case 'debug': return 'Направленная отладка (дебаггинг)';
-      case 'constraint': return 'Задачи с жесткими дидактическими ограничениями';
+      case 'constraint': return 'Задачи с ограничениями';
       case 'audit': return 'Критический аудит и верификация кода нейросети';
       default: return 'Алгоритмический практикум';
     }

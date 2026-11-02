@@ -6,10 +6,10 @@
   <title>Интерактивная лаборатория ИИ-резистентных учебных заданий</title>
   <meta name="description" content="Веб-лаборатория для выполнения ИИ-резистентных рабочих листов и пошаговой визуализации работы интерпретатора Python на уроках информатики (7-9 классы).">
   
-  <link rel="stylesheet" href="styles/base.css">
-  <link rel="stylesheet" href="styles/worksheet.css">
-  <link rel="stylesheet" href="styles/visualizer.css">
-  <link rel="stylesheet" href="styles/import.css">
+  <link rel="stylesheet" href="styles/base.css?v=1.2">
+  <link rel="stylesheet" href="styles/worksheet.css?v=1.2">
+  <link rel="stylesheet" href="styles/visualizer.css?v=1.2">
+  <link rel="stylesheet" href="styles/import.css?v=1.2">
 </head>
 <body>
 
@@ -169,11 +169,11 @@
       <div class="modal-body">
         <p style="margin-bottom: 12px;">Данная интерактивная среда разработана для практического применения методики ИИ-резистентных учебных заданий при обучении школьной информатике и базовому программированию на языке Python.</p>
         
-        <h4 style="font-size: 14px; font-weight: 600; margin: 14px 0 6px;">4 дидактические модели заданий:</h4>
+        <h4 style="font-size: 14px; font-weight: 600; margin: 14px 0 6px;">4 модели заданий:</h4>
         <ul style="padding-left: 20px; margin-bottom: 14px; line-height: 1.6;">
           <li><strong>Ручная пошаговая трассировка ветвлений и циклов:</strong> развивает навык ментальной симуляции работы процессора и состояний ячеек памяти.</li>
           <li><strong>Направленная отладка (дебаггинг):</strong> поиск и устранение дефектов типов данных (TypeError), логики аккумуляторов и бесконечных циклов.</li>
-          <li><strong>Задачи с жесткими дидактическими ограничениями:</strong> блокируют готовые нейросетевые конструкции (запреты на <code>max()</code>, <code>and</code>, <code>sum()</code>, срезы списков).</li>
+          <li><strong>Задачи с ограничениями по коду:</strong> блокируют готовые нейросетевые конструкции (запреты на <code>max()</code>, <code>and</code>, <code>sum()</code>, срезы списков).</li>
           <li><strong>Критический аудит решений генеративного ИИ:</strong> экспертиза кода нейросетей учащимися на соответствие школьной программе.</li>
         </ul>
 
@@ -186,6 +186,6 @@
     </div>
   </div>
 
-  <script type="module" src="src/ui/app.js"></script>
+  <script type="module" src="src/ui/app.js?v=1.2"></script>
 </body>
 </html>

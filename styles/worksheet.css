@@ -775,3 +775,75 @@
     border: 1px solid #000000 !important;
   }
 }
+
+/* Блок аудита решений нейросети */
+.interactive-audit-block {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.audit-prompt-box {
+  background-color: #f1f5f9;
+  border-left: 3px solid var(--color-brand);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+}
+
+.audit-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64748b;
+  letter-spacing: 0.04em;
+}
+
+.audit-prompt-text {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+  color: var(--text-primary);
+  font-style: italic;
+}
+
+.audit-subtext {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 6px 0 10px;
+}
+
+.audit-defects-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 8px 0 16px;
+}
+
+.defect-checkbox-row {
+  display: flex !important;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 14px;
+  background-color: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--text-primary);
+  box-sizing: border-box;
+  transition: all 0.12s ease;
+}
+
+.defect-checkbox-row:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+}
+
+.defect-checkbox-row input[type="checkbox"] {
+  width: 17px;
+  height: 17px;
+  margin-top: 2px;
+  cursor: pointer;
+  accent-color: var(--color-brand);
+  flex-shrink: 0;
+}
