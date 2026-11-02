@@ -85,7 +85,7 @@ export class WorksheetView {
             </div>
             
             <div class="sheet-score-card">
-              <span class="score-caption">Критериальное оценивание (ТУП РК)</span>
+              <span class="score-caption">Критериальное оценивание</span>
               <div class="score-value">
                 <span class="score-status-badge" style="font-size: 13px; font-weight: 600; color: #0369a1; background: #e0f2fe; padding: 4px 10px; border-radius: 4px; display: inline-block;">На проверке учителем</span>
                 <span class="score-max" style="font-size: 12px; color: #64748b; margin-top: 2px;">максимум 10 баллов</span>
@@ -136,15 +136,15 @@ export class WorksheetView {
             </div>
 
             <div class="reflection-traffic-light">
-              <span class="reflection-label">Самочувствие по результатам урока («Светофор»):</span>
+              <span class="reflection-label">Самооценка по результатам урока:</span>
               <div class="traffic-options">
                 <label class="traffic-btn green ${this.studentState.trafficLight === 'green' ? 'active' : ''}">
                   <input type="radio" name="traffic" value="green" ${this.studentState.trafficLight === 'green' ? 'checked' : ''}>
-                  <span>🟢 Уверенно понял(а), могу объяснить другому</span>
+                  <span>🟢 Уверенно понял материал, могу объяснить другому</span>
                 </label>
                 <label class="traffic-btn yellow ${this.studentState.trafficLight === 'yellow' ? 'active' : ''}">
                   <input type="radio" name="traffic" value="yellow" ${this.studentState.trafficLight === 'yellow' ? 'checked' : ''}>
-                  <span>🟡 Были затруднения, но разобрался(лась)</span>
+                  <span>🟡 Были затруднения, но удалось разобраться</span>
                 </label>
                 <label class="traffic-btn red ${this.studentState.trafficLight === 'red' ? 'active' : ''}">
                   <input type="radio" name="traffic" value="red" ${this.studentState.trafficLight === 'red' ? 'checked' : ''}>
@@ -163,7 +163,7 @@ export class WorksheetView {
                 <textarea class="textarea-ref" id="refHard" rows="2" placeholder="Ваш ответ...">${this.escape(this.studentState.refHard || '')}</textarea>
               </label>
               <label class="ref-field">
-                <span>3. Какой способ помог найти решение (трассировка, пошаговый разбор, проверка типов)?</span>
+                <span>3. Какой способ помог найти решение?</span>
                 <textarea class="textarea-ref" id="refHelp" rows="2" placeholder="Ваш ответ...">${this.escape(this.studentState.refHelp || '')}</textarea>
               </label>
             </div>
@@ -214,7 +214,7 @@ export class WorksheetView {
 
         <!-- Кодовый блок задания -->
         ${task.code ? this.renderCodeSnippet(task.code, task.id) : ''}
-        ${task.buggyCode ? this.renderCodeSnippet(task.buggyCode, task.id, 'Код с дефектом (требуется отладка):') : ''}
+        ${task.buggyCode ? this.renderCodeSnippet(task.buggyCode, task.id, 'Код с дефектом:') : ''}
         ${task.aiOutputCode ? this.renderCodeSnippet(task.aiOutputCode, task.id, 'Ответ генеративной нейросети:') : ''}
 
         <!-- Интерактивная область решения -->
@@ -473,7 +473,7 @@ export class WorksheetView {
     return `
       <div class="interactive-constraint-block">
         <div class="constraint-warning-banner">
-          <span class="constraint-title">Ограничения по коду (запрещено использовать):</span>
+          <span class="constraint-title">Ограничения по коду:</span>
           <div class="banned-tags-list">
             ${banned.map(word => `<span class="banned-tag">ЗАПРЕЩЕНО: <code>${this.escape(word)}</code></span>`).join('')}
           </div>
@@ -512,7 +512,7 @@ export class WorksheetView {
     return `
       <div class="interactive-audit-block">
         <div class="audit-prompt-box">
-          <span class="audit-label">Запрос (промпт) ученика к нейросети:</span>
+          <span class="audit-label">Запрос ученика к нейросети:</span>
           <p class="audit-prompt-text">«${this.escape(task.aiPrompt || '')}»</p>
         </div>
 
@@ -533,7 +533,7 @@ export class WorksheetView {
 
         <div class="audit-rewrite-area">
           <label class="debug-label">
-            <span class="debug-q-text">Каноническое школьное решение (Задание 2):</span>
+            <span class="debug-q-text">Каноническое школьное решение:</span>
             <p class="audit-subtext">Перепишите код нейросети без использования sum(), lambda и list comprehension:</p>
             <textarea class="code-editor-box audit-code-editor" data-task="${task.id}" rows="8" 
               spellcheck="false">${this.escape(this.studentState[`audit_${task.id}_code`] || '')}</textarea>
@@ -789,7 +789,7 @@ export class WorksheetView {
               alertEl.style.background = '#f0fdf4';
               alertEl.style.color = '#166534';
               alertEl.style.border = '1px solid #bbf7d0';
-              const cloudNote = res && res.cloudSynced ? ' (синхронизировано с облаком Firebase)' : ' (сохранено в локальном журнале учителя)';
+              const cloudNote = res && res.cloudSynced ? ' - синхронизировано с облаком Firebase' : ' - сохранено в локальном журнале учителя';
               alertEl.innerHTML = `✓ <strong>Работа успешно сдана учителю на проверку!</strong> Оценка и обратная связь будут выставлены учителем.${cloudNote}`;
             }
           } catch (err) {

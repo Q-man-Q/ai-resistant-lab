@@ -479,7 +479,7 @@ print("Максимум:", max_val)`;
         this.dom.btnTeacherAuth.title = 'Кабинет учителя активен. Нажмите, чтобы выйти и заблокировать журнал.';
       } else {
         this.dom.btnTeacherAuth.style.color = '';
-        this.dom.btnTeacherAuth.title = 'Вход в кабинет учителя (защищен PIN-кодом)';
+        this.dom.btnTeacherAuth.title = 'Вход в кабинет учителя';
       }
     }
   }

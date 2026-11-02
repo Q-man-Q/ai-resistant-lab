@@ -61,7 +61,7 @@ export class MemoryView {
   renderValueFormatted(varInfo) {
     if (varInfo.type === 'list' && Array.isArray(varInfo.rawValue)) {
       if (varInfo.rawValue.length === 0) {
-        return '<div class="list-empty">[ ] (пустой список)</div>';
+        return '<div class="list-empty">[ ] пустой список</div>';
       }
       return `
         <div class="list-container">

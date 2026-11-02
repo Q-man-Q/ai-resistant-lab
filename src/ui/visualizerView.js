@@ -31,21 +31,21 @@ export class VisualizerView {
         <!-- Верхняя панель управления плеером -->
         <div class="player-toolbar">
           <div class="player-controls">
-            <button class="btn-tool" id="btnStepBack" title="Шаг назад (стрелка влево)">
+            <button class="btn-tool" id="btnStepBack" title="Шаг назад: стрелка влево">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                 <path d="M12 2L4 8l8 6V2z"/>
               </svg>
               <span>Назад</span>
             </button>
             
-            <button class="btn-tool btn-primary-tool" id="btnPlayPause" title="Автовоспроизведение / Пауза (Пробел)">
+            <button class="btn-tool btn-primary-tool" id="btnPlayPause" title="Автовоспроизведение и пауза: пробел">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" id="playIcon">
                 <path d="M4 2l10 6-10 6V2z"/>
               </svg>
               <span id="playLabel">Старт</span>
             </button>
 
-            <button class="btn-tool" id="btnStepForward" title="Шаг вперед (стрелка вправо)">
+            <button class="btn-tool" id="btnStepForward" title="Шаг вперед: стрелка вправо">
               <span>Вперед</span>
               <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
                 <path d="M4 2l8 6-8 6V2z"/>
@@ -87,7 +87,7 @@ export class VisualizerView {
             </div>
             <!-- Панель входных данных -->
             <div class="visualizer-inputs-bar">
-              <span class="inputs-bar-label">Входные данные (input):</span>
+              <span class="inputs-bar-label">Входные данные input:</span>
               <input type="text" class="inputs-bar-field" id="visualizerInputsField" placeholder="напр. 2026, 2008">
               <button class="btn btn-sm btn-secondary" id="btnApplyInputs">Применить</button>
             </div>
@@ -104,7 +104,7 @@ export class VisualizerView {
           <!-- Правая колонка: Память и Консоль -->
           <div class="panel-card state-panel">
             <div class="panel-header">
-              <span class="panel-title">Состояние оперативной памяти (RAM)</span>
+              <span class="panel-title">Состояние оперативной памяти RAM</span>
               <span class="panel-badge">Переменные</span>
             </div>
             <div class="memory-shelves-container" id="memoryShelves"></div>
@@ -112,7 +112,7 @@ export class VisualizerView {
             <div class="panel-divider"></div>
 
             <div class="panel-header console-header">
-              <span class="panel-title">Консоль вывода (print)</span>
+              <span class="panel-title">Консоль вывода print</span>
             </div>
             <div class="console-box" id="consoleBox"></div>
             
@@ -333,10 +333,10 @@ export class VisualizerView {
       return `${line}Ввод данных пользователя: получено значение ${step.value} для переменной "${step.changedVar}".`;
     }
     if (step.type === 'IF_TRUE') {
-      return `${line}Условие оказалось ИСТИННЫМ (True). Программа переходит к выполнению внутреннего блока ветвления.`;
+      return `${line}Условие оказалось ИСТИННЫМ True. Программа переходит к выполнению внутреннего блока ветвления.`;
     }
     if (step.type === 'IF_FALSE') {
-      return `${line}Условие оказалось ЛОЖНЫМ (False). Программа переходит к следующей ветке elif или else.`;
+      return `${line}Условие оказалось ЛОЖНЫМ False. Программа переходит к следующей ветке elif или else.`;
     }
     if (step.type === 'FOR_START' || step.type === 'FOR_STEP') {
       return `${line}Итерация цикла for. Переменная-счетчик получила значение ${step.value}.`;

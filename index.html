@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Интерактивная лаборатория ИИ-резистентных учебных заданий</title>
-  <meta name="description" content="Веб-лаборатория для выполнения ИИ-резистентных рабочих листов и пошаговой визуализации работы интерпретатора Python на уроках информатики (7-9 классы).">
+  <meta name="description" content="Веб-лаборатория для выполнения ИИ-резистентных рабочих листов и пошаговой визуализации работы интерпретатора Python на уроках информатики 7-9 классы.">
   
-  <link rel="stylesheet" href="styles/base.css?v=1.5">
-  <link rel="stylesheet" href="styles/worksheet.css?v=1.5">
-  <link rel="stylesheet" href="styles/visualizer.css?v=1.5">
-  <link rel="stylesheet" href="styles/import.css?v=1.5">
+  <link rel="stylesheet" href="styles/base.css?v=2.0">
+  <link rel="stylesheet" href="styles/worksheet.css?v=2.0">
+  <link rel="stylesheet" href="styles/visualizer.css?v=2.0">
+  <link rel="stylesheet" href="styles/import.css?v=2.0">
 </head>
 <body>
 
@@ -23,7 +23,7 @@
       </div>
       <div class="brand-text">
         <h1>Лаборатория ИИ-резистентных заданий</h1>
-        <p>Информатика 7-9 классы | ТУП РК | Пошаговый визуализатор RAM</p>
+        <p>Информатика 7-9 классы | Пошаговый визуализатор RAM</p>
       </div>
     </div>
 
@@ -86,7 +86,7 @@
         <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/>
         <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A4.985 4.985 0 0 1 8 2c2.51 0 4.57 1.844 4.943 4.256a.5.5 0 1 1-.986.155A4.002 4.002 0 0 0 8 3zM3.057 9.744A.5.5 0 0 1 4.043 9.589 4.002 4.002 0 0 0 8 13c1.552 0 2.94-.707 3.857-1.818a.5.5 0 1 1 .771.636A4.985 4.985 0 0 1 8 14c-2.51 0-4.57-1.844-4.943-4.256z"/>
       </svg>
-      <span>Интерактивный разбор (Визуализатор RAM)</span>
+      <span>Интерактивный разбор</span>
     </button>
 
     <button class="nav-tab-btn" id="tabSandbox">
@@ -135,7 +135,7 @@
   <div class="modal-backdrop" id="importModal">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3 class="modal-title">Импорт рабочего листа (.json)</h3>
+        <h3 class="modal-title">Импорт рабочего листа</h3>
         <button class="btn btn-ghost" id="btnCloseImportModal">✕</button>
       </div>
       <div class="modal-body">
@@ -158,7 +158,7 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" id="btnDownloadTemplate">
-          <span>Скачать шаблон (.json)</span>
+          <span>Скачать шаблон JSON</span>
         </button>
         <button class="btn btn-primary" id="btnSubmitImport">
           <span>Импортировать в лабораторию</span>
@@ -179,8 +179,8 @@
         <h4 style="font-size: 14px; font-weight: 600; margin: 14px 0 6px;">4 модели заданий:</h4>
         <ul style="padding-left: 20px; margin-bottom: 14px; line-height: 1.6;">
           <li><strong>Ручная пошаговая трассировка ветвлений и циклов:</strong> развивает навык ментальной симуляции работы процессора и состояний ячеек памяти.</li>
-          <li><strong>Направленная отладка (дебаггинг):</strong> поиск и устранение дефектов типов данных (TypeError), логики аккумуляторов и бесконечных циклов.</li>
-          <li><strong>Задачи с ограничениями по коду:</strong> блокируют готовые нейросетевые конструкции (запреты на <code>max()</code>, <code>and</code>, <code>sum()</code>, срезы списков).</li>
+          <li><strong>Направленная отладка:</strong> поиск и устранение дефектов типов данных TypeError, логики аккумуляторов и бесконечных циклов.</li>
+          <li><strong>Задачи с ограничениями по коду:</strong> блокируют готовые нейросетевые конструкции и стандартные библиотечные функции.</li>
           <li><strong>Критический аудит решений генеративного ИИ:</strong> экспертиза кода нейросетей учащимися на соответствие школьной программе.</li>
         </ul>
 
@@ -208,7 +208,7 @@
           <label for="teacherPinInput" style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 13px; color: #1e293b;">
             Введите секретный PIN-код учителя:
           </label>
-          <input type="password" id="teacherPinInput" class="app-select" placeholder="PIN-код (по умолчанию: 2026)" style="width: 100%; padding: 10px 12px; font-size: 15px; letter-spacing: 2px;" autocomplete="off" />
+          <input type="password" id="teacherPinInput" class="app-select" placeholder="Введите PIN-код" style="width: 100%; padding: 10px 12px; font-size: 15px; letter-spacing: 2px;" autocomplete="off" />
           <div id="teacherAuthError" style="display: none; color: #dc2626; font-size: 13px; margin-top: 8px; background: #fef2f2; padding: 8px 12px; border-radius: 6px; border: 1px solid #fecaca;">
             Неверный PIN-код. Попробуйте еще раз.
           </div>
@@ -221,6 +221,6 @@
     </div>
   </div>
 
-  <script type="module" src="src/ui/app.js?v=1.5"></script>
+  <script type="module" src="src/ui/app.js?v=2.0"></script>
 </body>
 </html>

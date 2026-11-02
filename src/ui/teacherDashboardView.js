@@ -21,7 +21,7 @@ export class TeacherDashboardView {
       <div class="teacher-dashboard">
         <div class="dashboard-header">
           <div>
-            <h2 class="dashboard-title">Журнал сдачи работ (Кабинет учителя)</h2>
+            <h2 class="dashboard-title">Журнал сдачи работ</h2>
             <p class="dashboard-subtitle">Централизованный сбор и проверка письменных ответов, исправленного кода и баллов учащихся.</p>
           </div>
           <div class="dashboard-actions">
@@ -36,7 +36,7 @@ export class TeacherDashboardView {
                 <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
                 <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
               </svg>
-              <span>Экспорт ведомости (CSV)</span>
+              <span>Экспорт ведомости CSV</span>
             </button>
             <button class="btn btn-secondary" id="btnChangePin" title="Сменить мастер-PIN для входа учителя">
               <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
@@ -64,11 +64,11 @@ export class TeacherDashboardView {
             <span class="stat-value" id="statTotalSubmissions">0</span>
           </div>
           <div class="stat-card">
-            <span class="stat-label">Средний балл (из 10)</span>
+            <span class="stat-label">Средний балл</span>
             <span class="stat-value" id="statAvgScore">0.0</span>
           </div>
           <div class="stat-card">
-            <span class="stat-label">Самооценка (Светофор)</span>
+            <span class="stat-label">Самооценка</span>
             <div class="traffic-summary">
               <span class="traffic-tag green" id="statGreenCount">🟢 0</span>
               <span class="traffic-tag yellow" id="statYellowCount">🟡 0</span>
@@ -77,7 +77,7 @@ export class TeacherDashboardView {
           </div>
           <div class="stat-card">
             <span class="stat-label">Режим синхронизации</span>
-            <span class="stat-sync" id="statSyncMode">Локальный (Браузер)</span>
+            <span class="stat-sync" id="statSyncMode">Локальный режим</span>
           </div>
         </div>
 
@@ -150,7 +150,7 @@ export class TeacherDashboardView {
           </div>
           <div class="modal-body">
             <p style="margin-bottom: 12px; font-size: 13px; color: #475569;">
-              Для синхронизации работ со всех компьютеров класса в реальном времени подключите бесплатную базу Firebase Firestore. Вставьте конфигурационный объект проекта (JSON):
+              Для синхронизации работ со всех компьютеров класса в реальном времени подключите базу Firebase Firestore. Вставьте конфигурационный объект проекта:
             </p>
             <textarea id="firebaseConfigTextarea" class="app-textarea" rows="8" placeholder='{\n  "apiKey": "AIzaSy...",\n  "authDomain": "my-lab.firebaseapp.com",\n  "projectId": "my-lab",\n  "storageBucket": "my-lab.appspot.com",\n  "messagingSenderId": "...",\n  "appId": "..."\n}'></textarea>
             <p style="margin-top: 10px; font-size: 12px; color: #64748b;">
@@ -158,7 +158,7 @@ export class TeacherDashboardView {
             </p>
           </div>
           <div class="modal-footer">
-            <button class="btn btn-ghost" id="btnResetFirebaseConfig">Сбросить (Локальный режим)</button>
+            <button class="btn btn-ghost" id="btnResetFirebaseConfig">Сбросить в локальный режим</button>
             <button class="btn btn-primary" id="btnSaveFirebaseConfig">Сохранить конфигурацию</button>
           </div>
         </div>
@@ -178,10 +178,10 @@ export class TeacherDashboardView {
             <div style="display: flex; flex-direction: column; gap: 12px;">
               <label style="display: block;">
                 <span style="font-size: 13px; font-weight: 500; color: #334155;">Текущий PIN-код:</span>
-                <input type="password" id="inputOldPin" class="app-select" style="width: 100%; margin-top: 4px;" placeholder="По умолчанию: 2026" autocomplete="off">
+                <input type="password" id="inputOldPin" class="app-select" style="width: 100%; margin-top: 4px;" placeholder="Текущий PIN" autocomplete="off">
               </label>
               <label style="display: block;">
-                <span style="font-size: 13px; font-weight: 500; color: #334155;">Новый PIN-код (от 4 символов):</span>
+                <span style="font-size: 13px; font-weight: 500; color: #334155;">Новый PIN-код:</span>
                 <input type="password" id="inputNewPin" class="app-select" style="width: 100%; margin-top: 4px;" placeholder="Новый PIN" autocomplete="off">
               </label>
               <label style="display: block;">
@@ -346,7 +346,7 @@ export class TeacherDashboardView {
             return;
           }
 
-          alert('✓ PIN-код учителя успешно обновлен (сохранен локально и в облаке Firebase)!');
+          alert('✓ PIN-код учителя успешно обновлен');
           closePinModal();
         } finally {
           btnSaveChangePin.disabled = false;
@@ -377,10 +377,10 @@ export class TeacherDashboardView {
   updateStats() {
     const total = this.submissions.length;
     const graded = this.submissions.filter(s => s.status === 'graded');
-    this.container.querySelector('#statTotalSubmissions').textContent = `${total} (проверено: ${graded.length})`;
+    this.container.querySelector('#statTotalSubmissions').textContent = `${total} / проверено: ${graded.length}`;
 
     if (graded.length === 0) {
-      this.container.querySelector('#statAvgScore').textContent = '—';
+      this.container.querySelector('#statAvgScore').textContent = '-';
       this.container.querySelector('#statGreenCount').textContent = '🟢 0';
       this.container.querySelector('#statYellowCount').textContent = '🟡 0';
       this.container.querySelector('#statRedCount').textContent = '🔴 0';
@@ -401,11 +401,11 @@ export class TeacherDashboardView {
     const syncEl = this.container.querySelector('#statSyncMode');
     const fbText = this.container.querySelector('#firebaseStatusText');
     if (isCloud) {
-      syncEl.textContent = 'Облако (Firebase)';
+      syncEl.textContent = 'Облако Firebase';
       syncEl.style.color = '#10b981';
       fbText.textContent = 'Firebase: Подключен';
     } else {
-      syncEl.textContent = 'Локальный (Браузер)';
+      syncEl.textContent = 'Локальный режим';
       syncEl.style.color = '#64748b';
       fbText.textContent = 'Облако Firebase';
     }
@@ -510,7 +510,7 @@ export class TeacherDashboardView {
   openReviewModal(sub) {
     if (!sub) return;
 
-    this.container.querySelector('#reviewModalTitle').textContent = `Проверка работы: ${sub.studentName} (${sub.studentClass || 'Класс не указан'})`;
+    this.container.querySelector('#reviewModalTitle').textContent = `Проверка работы: ${sub.studentName} - ${sub.studentClass || 'Класс не указан'}`;
     const body = this.container.querySelector('#reviewModalBody');
 
     const answers = sub.answers || {};
@@ -527,7 +527,7 @@ export class TeacherDashboardView {
         if (k.includes('concept')) label = 'Вопрос на понимание алгоритма';
         else if (k.includes('q1')) label = 'Ответ на вопрос №1';
         else if (k.includes('q2')) label = 'Ответ на вопрос №2';
-        else if (k.includes('code')) label = 'Исправленный / написанный код программы';
+        else if (k.includes('code')) label = 'Исправленный или написанный код программы';
         else if (k.includes('ai_')) label = 'Аудит ответа нейросети';
 
         const isCode = typeof val === 'string' && (val.includes('\n') || val.includes('=') || val.includes('print'));
@@ -562,7 +562,7 @@ export class TeacherDashboardView {
         <div><strong>Лист:</strong> №${sub.worksheetId} ${escapeHtml(sub.worksheetTitle || '')}</div>
         <div><strong>Время сдачи:</strong> ${new Date(sub.createdAt).toLocaleString('ru-RU')}</div>
         <div><strong>Статус:</strong> ${isGraded ? '<span style="color: #16a34a; font-weight: 700;">✓ Проверено учителем</span>' : '<span style="color: #d97706; font-weight: 700;">⏳ Ожидает проверки</span>'}</div>
-        <div><strong>Самооценка (Светофор):</strong> ${sub.trafficLight === 'green' ? '🟢 Уверенно' : sub.trafficLight === 'yellow' ? '🟡 Были сомнения' : '🔴 Требуется помощь'}</div>
+        <div><strong>Самооценка:</strong> ${sub.trafficLight === 'green' ? '🟢 Уверенно' : sub.trafficLight === 'yellow' ? '🟡 Были сомнения' : '🔴 Требуется помощь'}</div>
       </div>
 
       <h4 style="font-size: 14px; font-weight: 600; margin: 16px 0 8px; color: #334155;">Письменные ответы и программный код учащегося:</h4>
@@ -574,7 +574,7 @@ export class TeacherDashboardView {
       <div style="margin-top: 24px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 18px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px;">
           <div>
-            <h4 style="font-size: 15px; font-weight: 700; color: #0f172a; margin: 0;">Критериальное оценивание учителем (Дескрипторы ТУП РК):</h4>
+            <h4 style="font-size: 15px; font-weight: 700; color: #0f172a; margin: 0;">Критериальное оценивание учителем:</h4>
             <p style="font-size: 12px; color: #64748b; margin: 2px 0 0;">Отметьте галочками дескрипторы, достигнутые учащимся в ходе выполнения работы.</p>
           </div>
           <div style="font-size: 16px; font-weight: 700; color: #0284c7; background: #e0f2fe; padding: 6px 14px; border-radius: 6px;">
@@ -674,7 +674,7 @@ export class TeacherDashboardView {
           });
 
           await this.refresh();
-          alert(`✓ Оценка (${total} из 10) успешно выставлена и сохранена в ведомость!`);
+          alert(`✓ Оценка ${total} из 10 успешно выставлена и сохранена в ведомость!`);
           this.container.querySelector('#reviewModal').style.display = 'none';
         } catch (err) {
           alert('Ошибка сохранения оценки: ' + err.message);

@@ -281,7 +281,7 @@ export class SubmissionService {
   exportToCSV(submissions) {
     if (!submissions || submissions.length === 0) return '';
 
-    const headers = ['ID', 'Дата и время', 'Класс', 'ФИО учащегося', 'Номер листа', 'Тема', 'Статус проверки', 'Балл учителя (из 10)', 'Комментарий учителя', 'Самооценка (Светофор)'];
+    const headers = ['ID', 'Дата и время', 'Класс', 'ФИО учащегося', 'Номер листа', 'Тема', 'Статус проверки', 'Балл учителя', 'Комментарий учителя', 'Самооценка'];
     const rows = submissions.map(s => [
       `"${s.id || ''}"`,
       `"${s.createdAt ? new Date(s.createdAt).toLocaleString('ru-RU') : ''}"`,
