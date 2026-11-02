@@ -5,6 +5,7 @@ export class WorksheetView {
     this.container = container;
     this.worksheet = options.worksheet || null;
     this.onOpenVisualizer = options.onOpenVisualizer || null;
+    this.onSubmitWorksheet = options.onSubmitWorksheet || null;
     this.studentState = {};
 
     this.initDOM();
@@ -26,6 +27,13 @@ export class WorksheetView {
       this.studentState = saved ? JSON.parse(saved) : {};
     } catch {
       this.studentState = {};
+    }
+
+    if (!this.studentState.studentName) {
+      this.studentState.studentName = localStorage.getItem('ai_lab_global_student_name') || '';
+    }
+    if (!this.studentState.studentClass) {
+      this.studentState.studentClass = localStorage.getItem('ai_lab_global_student_class') || '';
     }
   }
 
@@ -166,16 +174,23 @@ export class WorksheetView {
             </div>
 
             <div class="sheet-action-bar">
-              <button class="btn btn-secondary" id="btnPrintSheet">
+              <button class="btn btn-secondary" id="btnPrintSheet" title="Распечатать лист или сохранить в PDF">
                 <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
                   <path d="M4 1h8v2H4V1zm8 11v3H4v-3h8zm1-7H3a2 2 0 00-2 2v4a2 2 0 002 2h1v-2h8v2h1a2 2 0 002-2V7a2 2 0 00-2-2z"/>
                 </svg>
                 <span>Печать / Сохранить в PDF</span>
               </button>
-              <button class="btn btn-secondary" id="btnResetSheet">
-                <span>Сбросить ответы листа</span>
+              <button class="btn btn-secondary" id="btnResetSheet" title="Очистить введенные ответы">
+                <span>Сбросить ответы</span>
+              </button>
+              <button class="btn btn-primary btn-submit-sheet" id="btnSubmitSheet" style="background: #0284c7; border-color: #0284c7; font-weight: 600; padding: 8px 20px;">
+                <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+                  <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.8 14.5a.5.5 0 0 1-.928.008L6.88 9.12l-5.064-2.356a.5.5 0 0 1 .008-.928L15.314.036a.5.5 0 0 1 .54.11z"/>
+                </svg>
+                <span>Сдать работу учителю</span>
               </button>
             </div>
+            <div id="submitAlertMsg" class="submit-alert-msg" style="display: none; margin-top: 14px; padding: 12px 16px; border-radius: 6px; font-size: 14px;"></div>
           </div>
         </section>
       </div>
@@ -686,7 +701,7 @@ export class WorksheetView {
         if (!task) return;
 
         let codeToVisualize = task.code || task.starterCode || task.buggyCode || '';
-        let inputs = task.defaultInputs || [];
+        let inputs = task.defaultInputs || task.testInputs || [];
 
         if (task.type === 'debug' && this.studentState[`debug_${taskId}_code`]) {
           codeToVisualize = this.studentState[`debug_${taskId}_code`];
@@ -728,6 +743,96 @@ export class WorksheetView {
       }
     });
 
+    const nameInput = this.viewport.querySelector('#studentNameInput');
+    if (nameInput) {
+      nameInput.addEventListener('input', (e) => {
+        this.studentState.studentName = e.target.value.trim();
+        localStorage.setItem('ai_lab_global_student_name', e.target.value.trim());
+        nameInput.style.borderColor = '';
+        this.saveState();
+      });
+    }
+
+    const classInput = this.viewport.querySelector('#studentClassInput');
+    if (classInput) {
+      classInput.addEventListener('input', (e) => {
+        this.studentState.studentClass = e.target.value.trim();
+        localStorage.setItem('ai_lab_global_student_class', e.target.value.trim());
+        classInput.style.borderColor = '';
+        this.saveState();
+      });
+    }
+
+    const submitBtn = this.viewport.querySelector('#btnSubmitSheet');
+    if (submitBtn) {
+      submitBtn.addEventListener('click', async () => {
+        const name = (this.studentState.studentName || '').trim();
+        const sClass = (this.studentState.studentClass || '').trim();
+        const alertEl = this.viewport.querySelector('#submitAlertMsg');
+
+        if (!name) {
+          if (nameInput) {
+            nameInput.focus();
+            nameInput.style.borderColor = '#ef4444';
+          }
+          if (alertEl) {
+            alertEl.style.display = 'block';
+            alertEl.style.background = '#fef2f2';
+            alertEl.style.color = '#991b1b';
+            alertEl.style.border = '1px solid #fecaca';
+            alertEl.innerHTML = '⚠️ Пожалуйста, укажите ваши фамилию и имя вверху листа перед сдачей работы!';
+          }
+          return;
+        }
+
+        const score = this.calculateTotalScore();
+        const payload = {
+          worksheetId: this.worksheet.id,
+          worksheetTitle: this.worksheet.title,
+          grade: this.worksheet.grade,
+          studentName: name,
+          studentClass: sClass,
+          score: score,
+          maxScore: 10,
+          trafficLight: this.studentState.trafficLight || 'yellow',
+          answers: this.collectAllAnswers(),
+          rubric: this.collectRubricState()
+        };
+
+        if (this.onSubmitWorksheet) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Отправка...';
+          try {
+            const res = await this.onSubmitWorksheet(payload);
+            if (alertEl) {
+              alertEl.style.display = 'block';
+              alertEl.style.background = '#f0fdf4';
+              alertEl.style.color = '#166534';
+              alertEl.style.border = '1px solid #bbf7d0';
+              const cloudNote = res && res.cloudSynced ? ' (синхронизировано с облаком Firebase)' : ' (сохранено в локальном журнале учителя)';
+              alertEl.innerHTML = `✓ <strong>Работа успешно сдана учителю!</strong> Оценка: <strong>${score} из 10</strong> баллов.${cloudNote}`;
+            }
+          } catch (err) {
+            if (alertEl) {
+              alertEl.style.display = 'block';
+              alertEl.style.background = '#fef2f2';
+              alertEl.style.color = '#991b1b';
+              alertEl.style.border = '1px solid #fecaca';
+              alertEl.innerHTML = 'Ошибка отправки: ' + err.message;
+            }
+          } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.8 14.5a.5.5 0 0 1-.928.008L6.88 9.12l-5.064-2.356a.5.5 0 0 1 .008-.928L15.314.036a.5.5 0 0 1 .54.11z"/>
+              </svg>
+              <span>Сдать работу учителю</span>
+            `;
+          }
+        }
+      });
+    }
+
     const printBtn = this.viewport.querySelector('#btnPrintSheet');
     if (printBtn) {
       printBtn.addEventListener('click', () => {
@@ -745,6 +850,45 @@ export class WorksheetView {
         }
       });
     }
+  }
+
+  collectAllAnswers() {
+    const answers = {};
+    if (!this.viewport) return answers;
+
+    this.viewport.querySelectorAll('textarea').forEach(ta => {
+      if (ta.value && ta.value.trim()) {
+        answers[ta.id || ta.name || 'textarea'] = ta.value.trim();
+      }
+    });
+
+    this.viewport.querySelectorAll('input[type="text"]').forEach(inp => {
+      if (inp.id !== 'studentNameInput' && inp.id !== 'studentClassInput' && inp.value && inp.value.trim()) {
+        answers[inp.id || inp.name || 'input'] = inp.value.trim();
+      }
+    });
+
+    Object.keys(this.studentState).forEach(k => {
+      if (k.startsWith('debug_') || k.startsWith('code_') || k.startsWith('trace_') || k.startsWith('q_') || k.startsWith('audit_')) {
+        answers[k] = this.studentState[k];
+      }
+    });
+    return answers;
+  }
+
+  collectRubricState() {
+    const state = {};
+    if (this.worksheet && this.worksheet.rubric) {
+      this.worksheet.rubric.forEach((r, idx) => {
+        state[`rubric_${idx}`] = {
+          criterion: r.criterion,
+          descriptor: r.descriptor,
+          points: r.points,
+          achieved: this.isDescriptorAchieved(idx)
+        };
+      });
+    }
+    return state;
   }
 
   evaluateTraceTask(taskId) {

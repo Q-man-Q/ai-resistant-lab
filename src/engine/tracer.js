@@ -803,9 +803,9 @@ export class Tracer {
       let inputVal = '';
 
       if (this.inputsQueue.length > 0) {
-        inputVal = this.inputsQueue.shift();
+        inputVal = String(this.inputsQueue.shift());
       } else {
-        inputVal = 'Школа';
+        inputVal = '0';
       }
 
       if (prompt) {
@@ -816,7 +816,7 @@ export class Tracer {
       this.addStep({
         node: expr,
         action: 'INPUT',
-        message: `⌨️ input("${prompt}"): получен ответ пользователя "${inputVal}"`,
+        message: prompt ? `Ввод пользователя (${prompt}): "${inputVal}"` : `Ввод пользователя: "${inputVal}"`,
         pose: 'walk',
         isInputWait: true,
         prompt,

@@ -85,6 +85,12 @@ export class VisualizerView {
               <span class="panel-title">Текст программы</span>
               <span class="panel-subtitle" id="codeLanguageTag">Python 3</span>
             </div>
+            <!-- Панель входных данных -->
+            <div class="visualizer-inputs-bar">
+              <span class="inputs-bar-label">Входные данные (input):</span>
+              <input type="text" class="inputs-bar-field" id="visualizerInputsField" placeholder="напр. 2026, 2008">
+              <button class="btn btn-sm btn-secondary" id="btnApplyInputs">Применить</button>
+            </div>
             <div class="code-viewer-wrapper">
               <div class="code-lines-container" id="codeViewer"></div>
             </div>
@@ -130,7 +136,9 @@ export class VisualizerView {
       explanationText: this.container.querySelector('#explanationText'),
       memoryEl: this.container.querySelector('#memoryShelves'),
       consoleEl: this.container.querySelector('#consoleBox'),
-      stackEl: this.container.querySelector('#callStackBox')
+      stackEl: this.container.querySelector('#callStackBox'),
+      inputsField: this.container.querySelector('#visualizerInputsField'),
+      btnApplyInputs: this.container.querySelector('#btnApplyInputs')
     };
   }
 
@@ -163,6 +171,15 @@ export class VisualizerView {
       this.goToStep(parseInt(e.target.value, 10));
     });
 
+    if (this.dom.btnApplyInputs) {
+      this.dom.btnApplyInputs.addEventListener('click', () => {
+        const raw = this.dom.inputsField ? this.dom.inputsField.value : '';
+        const parsed = raw.split(',').map(s => s.trim()).filter(Boolean);
+        this.loadCode(this.code, parsed);
+        this.goToStep(0);
+      });
+    }
+
     this.dom.speedSelect.addEventListener('change', (e) => {
       this.speed = parseFloat(e.target.value);
       if (this.isPlaying) {
@@ -192,6 +209,10 @@ export class VisualizerView {
     this.pause();
     this.code = code;
     this.inputs = inputs;
+
+    if (this.dom && this.dom.inputsField) {
+      this.dom.inputsField.value = Array.isArray(inputs) ? inputs.join(', ') : '';
+    }
 
     try {
       this.traceResult = generateTrace(code, { inputs });

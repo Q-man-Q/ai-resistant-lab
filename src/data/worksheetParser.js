@@ -118,7 +118,7 @@ export class WorksheetParser {
           aiPrompt: task.aiPrompt || '',
           aiOutputCode: task.aiOutputCode || '',
           aiDefects: Array.isArray(task.aiDefects) ? task.aiDefects : [],
-          defaultInputs: Array.isArray(task.defaultInputs) ? task.defaultInputs : [],
+          defaultInputs: Array.isArray(task.defaultInputs) ? task.defaultInputs : (Array.isArray(task.testInputs) ? task.testInputs : []),
           traceTests: Array.isArray(task.traceTests) ? task.traceTests : null,
           traceSteps: Array.isArray(task.traceSteps) ? task.traceSteps : null,
           bubbleSteps: Array.isArray(task.bubbleSteps) ? task.bubbleSteps : null,

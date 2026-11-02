@@ -4,10 +4,13 @@ import { WorksheetStore } from '../data/worksheetStore.js';
 import { WorksheetParser } from '../data/worksheetParser.js';
 import { WorksheetView } from './worksheetView.js';
 import { VisualizerView } from './visualizerView.js';
+import { SubmissionService } from '../services/submissionService.js';
+import { TeacherDashboardView } from './teacherDashboardView.js';
 
 export class App {
   constructor() {
     this.store = new WorksheetStore();
+    this.submissionService = new SubmissionService();
     this.currentSheetId = 1;
     this.currentTab = 'worksheet'; // 'worksheet' | 'visualizer' | 'sandbox'
     this.customSandboxCode = `numbers = [3, 8, 1, 6, 2]
@@ -22,9 +25,11 @@ print("Максимум:", max_val)`;
       tabWorksheet: document.querySelector('#tabWorksheet'),
       tabVisualizer: document.querySelector('#tabVisualizer'),
       tabSandbox: document.querySelector('#tabSandbox'),
+      tabTeacher: document.querySelector('#tabTeacher'),
       worksheetContainer: document.querySelector('#worksheetContainer'),
       visualizerContainer: document.querySelector('#visualizerContainer'),
       sandboxContainer: document.querySelector('#sandboxContainer'),
+      teacherContainer: document.querySelector('#teacherContainer'),
       
       // Модальное окно импорта
       btnOpenImport: document.querySelector('#btnOpenImport'),
@@ -65,10 +70,17 @@ print("Максимум:", max_val)`;
     this.worksheetView = new WorksheetView(this.dom.worksheetContainer, {
       onOpenVisualizer: (code, inputs, task) => {
         this.openInVisualizer(code, inputs, task);
+      },
+      onSubmitWorksheet: async (subData) => {
+        return await this.submissionService.submitWorksheet(subData);
       }
     });
 
     this.visualizerView = new VisualizerView(this.dom.visualizerContainer);
+
+    this.teacherView = new TeacherDashboardView(this.dom.teacherContainer, {
+      submissionService: this.submissionService
+    });
   }
 
   populateSheetSelect() {
@@ -107,6 +119,9 @@ print("Максимум:", max_val)`;
     this.dom.tabWorksheet.addEventListener('click', () => this.switchTab('worksheet'));
     this.dom.tabVisualizer.addEventListener('click', () => this.switchTab('visualizer'));
     this.dom.tabSandbox.addEventListener('click', () => this.switchTab('sandbox'));
+    if (this.dom.tabTeacher) {
+      this.dom.tabTeacher.addEventListener('click', () => this.switchTab('teacher'));
+    }
 
     const openAbout = () => this.dom.aboutModal.classList.add('open');
     const closeAbout = () => this.dom.aboutModal.classList.remove('open');
@@ -310,7 +325,7 @@ print("Максимум:", max_val)`;
     const firstTask = ws.tasks[0];
     if (firstTask) {
       const code = firstTask.code || firstTask.starterCode || firstTask.buggyCode || '';
-      const inputs = firstTask.defaultInputs || [];
+      const inputs = firstTask.defaultInputs || firstTask.testInputs || [];
       this.visualizerView.loadCode(code, inputs);
     }
   }
@@ -321,15 +336,23 @@ print("Максимум:", max_val)`;
     this.dom.tabWorksheet.classList.toggle('active', tabName === 'worksheet');
     this.dom.tabVisualizer.classList.toggle('active', tabName === 'visualizer');
     this.dom.tabSandbox.classList.toggle('active', tabName === 'sandbox');
+    if (this.dom.tabTeacher) {
+      this.dom.tabTeacher.classList.toggle('active', tabName === 'teacher');
+    }
 
     this.dom.worksheetContainer.style.display = (tabName === 'worksheet') ? 'block' : 'none';
     this.dom.visualizerContainer.style.display = (tabName === 'visualizer') ? 'block' : 'none';
     if (this.dom.sandboxContainer) {
       this.dom.sandboxContainer.style.display = (tabName === 'sandbox') ? 'block' : 'none';
     }
+    if (this.dom.teacherContainer) {
+      this.dom.teacherContainer.style.display = (tabName === 'teacher') ? 'block' : 'none';
+    }
 
     if (tabName === 'visualizer') {
       this.visualizerView.goToStep(this.visualizerView.currentStepIdx || 0);
+    } else if (tabName === 'teacher' && this.teacherView) {
+      this.teacherView.refresh();
     }
   }
 
