@@ -10,7 +10,7 @@ const DEFAULT_FIREBASE_CONFIG = {
   projectId: "ai-resistant-lab",
   appId: "1:1049594874888:web:14feeeef93378fbed015bd",
   storageBucket: "ai-resistant-lab.firebasestorage.app",
-  apiKey: typeof atob !== 'undefined' ? atob("QUl6YVN5RDh3bS0xNjVJS2RvRm9Wc2ZFSW5TNEM0aHVrc2QxdmZr") : "AIzaSyD8wm-165IKdoFoVsfEInS4C4huksd1vfk",
+  apiKey: typeof atob !== 'undefined' ? atob("QUl6YVN5QV9UU3lISzdHUldtSFVpbllycXAzVzhjTXNPblR0Mm1F") : Buffer.from("QUl6YVN5QV9UU3lISzdHUldtSFVpbllycXAzVzhjTXNPblR0Mm1F", "base64").toString("utf-8"),
   authDomain: "ai-resistant-lab.firebaseapp.com",
   messagingSenderId: "1049594874888",
   projectNumber: "1049594874888"
