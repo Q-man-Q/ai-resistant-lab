@@ -1,15 +1,9 @@
-/* ==========================================================================
-   AI-Resistant Informatics Lab: Step-by-Step Visualizer Styles
-   Academic memory shelves, clean timeline debugger, terminal console.
-   ========================================================================== */
-
 .visualizer-workbench {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-/* Player Toolbar */
 .player-toolbar {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-light);
@@ -109,7 +103,6 @@
   outline: none;
 }
 
-/* Two-Column Visualizer Panels */
 .visualizer-panels {
   display: grid;
   grid-template-columns: 1.15fr 0.85fr;
@@ -123,7 +116,6 @@
   }
 }
 
-/* Left Panel: Code */
 .code-panel {
   display: flex;
   flex-direction: column;
@@ -192,7 +184,6 @@
   font-weight: 600;
 }
 
-/* Explanation Box */
 .step-explanation-box {
   background-color: var(--bg-subtle);
   border: 1px solid var(--border-light);
@@ -217,7 +208,6 @@
   line-height: 1.45;
 }
 
-/* Right Panel: Memory & Terminal */
 .state-panel {
   display: flex;
   flex-direction: column;
@@ -239,7 +229,6 @@
   overflow-y: auto;
 }
 
-/* Variables Grid & Boxes */
 .variables-grid {
   display: flex;
   flex-direction: column;
@@ -347,7 +336,6 @@
   color: #fff;
 }
 
-/* List memory representation */
 .list-container {
   display: flex;
   gap: 4px;
@@ -413,7 +401,6 @@
   margin: 6px 0;
 }
 
-/* Console Output */
 .console-box {
   background-color: #090d16;
   border-radius: var(--radius-md);

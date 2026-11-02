@@ -1,8 +1,4 @@
-/**
- * Educational Python Lexer
- * Tokenizes Python code with exact character, line, and column spans.
- * Accurately tracks indentation (INDENT, DEDENT) and comments.
- */
+// Лексический анализатор подмножества языка Python
 
 export const TokenType = {
   NUMBER: 'NUMBER',
@@ -58,7 +54,7 @@ export class Tokenizer {
 
       const ch = this.source[this.pos];
 
-      // Newlines
+      // Перенос строки
       if (ch === '\n' || ch === '\r') {
         const startLine = this.line;
         const startCol = this.col;
@@ -72,7 +68,6 @@ export class Tokenizer {
         this.col = 0;
         this.atLineStart = true;
 
-        // Only emit NEWLINE if the last token wasn't already a NEWLINE, INDENT, or DEDENT
         const prev = this.tokens[this.tokens.length - 1];
         if (prev && prev.type !== TokenType.NEWLINE && prev.type !== TokenType.INDENT) {
           this.tokens.push({
@@ -89,14 +84,14 @@ export class Tokenizer {
         continue;
       }
 
-      // Whitespace inside line
+      // Пробелы
       if (ch === ' ' || ch === '\t') {
         this.pos++;
         this.col++;
         continue;
       }
 
-      // Comments
+      // Комментарии
       if (ch === '#') {
         const startLine = this.line;
         const startCol = this.col;
@@ -120,25 +115,25 @@ export class Tokenizer {
         continue;
       }
 
-      // Numbers (decimal integers and floats)
+      // Числа
       if (this.isDigit(ch) || (ch === '.' && this.isDigit(this.source[this.pos + 1]))) {
         this.readNumber();
         continue;
       }
 
-      // Strings ('...', "...", triple quotes, f-strings)
+      // Строки
       if (ch === '"' || ch === "'" || ((ch === 'f' || ch === 'F') && (this.source[this.pos + 1] === '"' || this.source[this.pos + 1] === "'"))) {
         this.readString();
         continue;
       }
 
-      // Identifiers and Keywords
+      // Идентификаторы и ключевые слова
       if (this.isIdentStart(ch)) {
         this.readIdentifierOrKeyword();
         continue;
       }
 
-      // Multi-char operators
+      // Составные операторы
       const twoChar = this.source.slice(this.pos, this.pos + 2);
       const threeChar = this.source.slice(this.pos, this.pos + 3);
 
@@ -151,23 +146,21 @@ export class Tokenizer {
         continue;
       }
 
-      // Single-char operators
+      // Одиночные операторы
       if (SINGLE_CHAR_OPS.has(ch)) {
         this.pushToken(TokenType.OPERATOR, ch, 1);
         continue;
       }
 
-      // Delimiters
+      // Разделители
       if (DELIMITERS.has(ch)) {
         this.pushToken(TokenType.DELIMITER, ch, 1);
         continue;
       }
 
-      // Unknown character fallback
       this.pushToken('UNKNOWN', ch, 1);
     }
 
-    // Trailing newline if needed
     const lastTok = this.tokens[this.tokens.length - 1];
     if (lastTok && lastTok.type !== TokenType.NEWLINE) {
       this.tokens.push({
@@ -182,7 +175,7 @@ export class Tokenizer {
       });
     }
 
-    // Unwind indentation stack down to 0
+    // Закрываем оставшиеся уровни отступов
     while (this.indentStack.length > 1) {
       this.indentStack.pop();
       this.tokens.push({
@@ -231,25 +224,23 @@ export class Tokenizer {
       }
     }
 
-    // Check if line is empty or comment-only
+    // Пустая строка или комментарий
     if (scanPos < this.source.length) {
       const nextC = this.source[scanPos];
       if (nextC === '\n' || nextC === '\r' || nextC === '#') {
-        // Skip emitting INDENT/DEDENT for empty/comment lines
         this.pos = scanPos;
         this.col = scanCol;
         this.atLineStart = false;
         return;
       }
     } else {
-      // Reached EOF
       this.pos = scanPos;
       this.col = scanCol;
       this.atLineStart = false;
       return;
     }
 
-    // Process indentation difference
+    // Обработка изменения отступа
     const currentIndent = this.indentStack[this.indentStack.length - 1];
     if (indent > currentIndent) {
       this.indentStack.push(indent);
@@ -359,7 +350,7 @@ export class Tokenizer {
           break;
         }
         if (this.source[this.pos] === '\n') {
-          // Unclosed string on single line
+          // Незакрытая строка
           break;
         }
       }

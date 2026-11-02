@@ -1,7 +1,4 @@
-/**
- * Visualizer Controller (Clean Stepping Debugger)
- * Connects the virtual machine tracer to the code viewer, memory shelves, and step player.
- */
+// Интерактивный пошаговый визуализатор исполнения кода
 
 import { generateTrace } from '../engine/tracer.js';
 import { MemoryView } from './memoryView.js';
@@ -174,7 +171,7 @@ export class VisualizerView {
       }
     });
 
-    // Keyboard navigation (Left/Right arrows, Space)
+    // Управление с клавиатуры (стрелки, пробел)
     window.addEventListener('keydown', (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
       if (e.code === 'ArrowRight') {
@@ -230,11 +227,10 @@ export class VisualizerView {
     const step = this.traceResult.steps[this.currentStepIdx];
     const total = this.traceResult.steps.length;
 
-    // Update slider and counter
     this.dom.timelineSlider.value = this.currentStepIdx;
     this.dom.stepCounter.textContent = `Шаг ${this.currentStepIdx + 1} / ${total}`;
 
-    // Highlight code line
+    // Подсветка активной строки
     this.container.querySelectorAll('.code-line').forEach(el => el.classList.remove('active-line'));
     if (step.line) {
       const activeEl = this.container.querySelector(`#codeLine-${step.line}`);
@@ -244,7 +240,6 @@ export class VisualizerView {
       }
     }
 
-    // Render memory and console
     this.memoryView.render({
       memory: step.memory || {},
       callStack: step.callStack || [],
@@ -253,7 +248,6 @@ export class VisualizerView {
       stdout: step.stdout || ''
     });
 
-    // Generate educational explanation
     this.dom.explanationText.textContent = this.generateExplanation(step);
 
     if (this.onStepChange) {

@@ -1,9 +1,4 @@
-/**
- * Worksheet Controller (Interactive AI-Resistant Classroom Sheet)
- * Renders curriculum-aligned worksheets, evaluates interactive trace tables,
- * performs live constraint checking, computes formative assessment rubrics (out of 10),
- * and provides seamless bridging to the step-by-step visualizer.
- */
+// Отображение и проверка интерактивного рабочего листа
 
 export class WorksheetView {
   constructor(container, options = {}) {
@@ -253,13 +248,8 @@ export class WorksheetView {
     `;
   }
 
-  // ---------------------------------------------------------------------------
-  // TASK BODIES
-  // ---------------------------------------------------------------------------
-
   renderTraceBody(task) {
     if (task.traceTests) {
-      // Таблица тестов ветвления (например Лист 1)
       return `
         <div class="interactive-trace-block">
           <h3 class="interactive-title">Таблица результатов трассировки:</h3>
@@ -324,7 +314,6 @@ export class WorksheetView {
     }
 
     if (task.traceSteps) {
-      // Таблица пошаговых итераций цикла (например Лист 3, Лист 5)
       return `
         <div class="interactive-trace-block">
           <h3 class="interactive-title">Пошаговая таблица состояний памяти:</h3>
@@ -373,7 +362,6 @@ export class WorksheetView {
     }
 
     if (task.bubbleSteps) {
-      // Таблица пузырьковой сортировки (Лист 6)
       return `
         <div class="interactive-trace-block">
           <h3 class="interactive-title">Один проход пузырьковой сортировки:</h3>
@@ -552,12 +540,7 @@ export class WorksheetView {
     `;
   }
 
-  // ---------------------------------------------------------------------------
-  // INTERACTION & EVALUATION
-  // ---------------------------------------------------------------------------
-
   bindEvents() {
-    // Student personal info
     const nameInput = this.viewport.querySelector('#studentNameInput');
     const classInput = this.viewport.querySelector('#studentClassInput');
     if (nameInput) {
@@ -573,7 +556,6 @@ export class WorksheetView {
       });
     }
 
-    // Trace inputs
     this.viewport.querySelectorAll('.trace-branch-input, .trace-cost-input').forEach(input => {
       input.addEventListener('input', (e) => {
         const taskId = e.target.dataset.task;
@@ -584,7 +566,6 @@ export class WorksheetView {
       });
     });
 
-    // Step inputs
     this.viewport.querySelectorAll('.step-val-input').forEach(input => {
       input.addEventListener('input', (e) => {
         const taskId = e.target.dataset.task;
@@ -594,7 +575,6 @@ export class WorksheetView {
       });
     });
 
-    // Concept questions textareas
     this.viewport.querySelectorAll('.concept-textarea').forEach(textarea => {
       textarea.addEventListener('input', (e) => {
         const taskId = e.target.dataset.task;
@@ -603,7 +583,6 @@ export class WorksheetView {
       });
     });
 
-    // Debug inputs
     this.viewport.querySelectorAll('.debug-answer-input').forEach(input => {
       input.addEventListener('input', (e) => {
         const taskId = e.target.dataset.task;
@@ -613,7 +592,6 @@ export class WorksheetView {
       });
     });
 
-    // Debug code editor
     this.viewport.querySelectorAll('.debug-code-editor').forEach(textarea => {
       textarea.addEventListener('input', (e) => {
         const taskId = e.target.dataset.task;
@@ -622,7 +600,7 @@ export class WorksheetView {
       });
     });
 
-    // Constraint live validator
+    // Валидация дидактических ограничений
     this.viewport.querySelectorAll('.constraint-code-editor').forEach(editor => {
       const taskId = editor.dataset.task;
       const task = this.worksheet.tasks.find(t => t.id === taskId);
@@ -648,7 +626,6 @@ export class WorksheetView {
       validateBanned();
     });
 
-    // Check trace button
     this.viewport.querySelectorAll('[data-check-trace]').forEach(btn => {
       btn.addEventListener('click', () => {
         const taskId = btn.dataset.checkTrace;
@@ -656,7 +633,6 @@ export class WorksheetView {
       });
     });
 
-    // Check steps button
     this.viewport.querySelectorAll('[data-check-steps]').forEach(btn => {
       btn.addEventListener('click', () => {
         const taskId = btn.dataset.checkSteps;
@@ -664,7 +640,6 @@ export class WorksheetView {
       });
     });
 
-    // Check debug button
     this.viewport.querySelectorAll('[data-check-debug]').forEach(btn => {
       btn.addEventListener('click', () => {
         const taskId = btn.dataset.checkDebug;
@@ -672,7 +647,6 @@ export class WorksheetView {
       });
     });
 
-    // Check constraint button
     this.viewport.querySelectorAll('[data-check-constraint]').forEach(btn => {
       btn.addEventListener('click', () => {
         const taskId = btn.dataset.checkConstraint;
@@ -680,7 +654,6 @@ export class WorksheetView {
       });
     });
 
-    // Audit checkboxes & button
     this.viewport.querySelectorAll('.audit-check').forEach(chk => {
       chk.addEventListener('change', (e) => {
         const taskId = e.target.dataset.task;
@@ -705,7 +678,7 @@ export class WorksheetView {
       });
     });
 
-    // Bridge button to visualizer
+    // Переход в пошаговый визуализатор
     this.viewport.querySelectorAll('[data-bridge-task]').forEach(btn => {
       btn.addEventListener('click', () => {
         const taskId = btn.dataset.bridgeTask;
@@ -715,7 +688,6 @@ export class WorksheetView {
         let codeToVisualize = task.code || task.starterCode || task.buggyCode || '';
         let inputs = task.defaultInputs || [];
 
-        // If it's a debug task and student wrote code, use student code
         if (task.type === 'debug' && this.studentState[`debug_${taskId}_code`]) {
           codeToVisualize = this.studentState[`debug_${taskId}_code`];
         } else if (task.type === 'constraint' && this.studentState[`code_${taskId}`]) {
@@ -728,7 +700,6 @@ export class WorksheetView {
       });
     });
 
-    // Rubric manual checkboxes
     this.viewport.querySelectorAll('.rubric-check').forEach(chk => {
       chk.addEventListener('change', (e) => {
         const idx = e.target.dataset.rubricIdx;
@@ -738,7 +709,6 @@ export class WorksheetView {
       });
     });
 
-    // Reflection traffic light
     this.viewport.querySelectorAll('input[name="traffic"]').forEach(radio => {
       radio.addEventListener('change', (e) => {
         this.studentState.trafficLight = e.target.value;
@@ -748,7 +718,6 @@ export class WorksheetView {
       });
     });
 
-    // Reflection textareas
     ['refEasy', 'refHard', 'refHelp'].forEach(id => {
       const el = this.viewport.querySelector(`#${id}`);
       if (el) {
@@ -759,7 +728,6 @@ export class WorksheetView {
       }
     });
 
-    // Print button
     const printBtn = this.viewport.querySelector('#btnPrintSheet');
     if (printBtn) {
       printBtn.addEventListener('click', () => {
@@ -767,7 +735,6 @@ export class WorksheetView {
       });
     }
 
-    // Reset button
     const resetBtn = this.viewport.querySelector('#btnResetSheet');
     if (resetBtn) {
       resetBtn.addEventListener('click', () => {
@@ -779,10 +746,6 @@ export class WorksheetView {
       });
     }
   }
-
-  // ---------------------------------------------------------------------------
-  // EVALUATION ENGINES
-  // ---------------------------------------------------------------------------
 
   evaluateTraceTask(taskId) {
     const task = this.worksheet.tasks.find(t => t.id === taskId);
@@ -796,9 +759,7 @@ export class WorksheetView {
       if (isOk) correctCount++;
     });
 
-    // Auto-update rubric descriptors
     if (this.worksheet.id === 1) {
-      // descriptors 0 and 1
       const test1Ok = this.studentState[`trace_${taskId}_1_status`] === 'correct';
       const test2Ok = this.studentState[`trace_${taskId}_2_status`] === 'correct';
       const test3Ok = this.studentState[`trace_${taskId}_3_status`] === 'correct';
@@ -807,7 +768,6 @@ export class WorksheetView {
       this.studentState['rubric_0'] = (test1Ok && test2Ok);
       this.studentState['rubric_1'] = (test3Ok && test4Ok);
 
-      // Check concept question
       const conceptAns = (this.studentState[`concept_${taskId}`] || '').toLowerCase();
       if (task.conceptQuestion && task.conceptQuestion.keywords) {
         const matches = task.conceptQuestion.keywords.some(k => conceptAns.includes(k));
@@ -852,7 +812,6 @@ export class WorksheetView {
     const feedback = this.viewport.querySelector(`#debugFeedback_${taskId}`);
     const code = this.studentState[`debug_${taskId}_code`] || '';
 
-    // Verify answers to questions
     if (this.worksheet.id === 1) {
       const q1 = (this.studentState[`debug_${taskId}_q1`] || '').trim();
       const q2 = (this.studentState[`debug_${taskId}_q2`] || '').toLowerCase();
@@ -917,7 +876,6 @@ export class WorksheetView {
       return;
     }
 
-    // Award rubric points for constraint satisfaction
     if (this.worksheet.id === 2) {
       this.studentState['rubric_0'] = true;
       this.studentState['rubric_1'] = true;

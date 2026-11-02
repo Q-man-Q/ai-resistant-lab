@@ -1,7 +1,4 @@
-/**
- * Memory & State Visualizer (Clean Educational Edition)
- * Visualizes variables in RAM as structured boxes with types, values, and list slots.
- */
+// Визуализация переменных в оперативной памяти и вывода консоли
 
 export class MemoryView {
   constructor(memoryEl, stackEl, consoleEl) {

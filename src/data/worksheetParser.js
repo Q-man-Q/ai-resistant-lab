@@ -1,14 +1,7 @@
-/**
- * Worksheet Parser and Validator
- * Validates, sanitizes, and normalizes worksheet objects against the specification.
- */
+// Валидатор и парсер структуры рабочих листов
 
 export class WorksheetParser {
-  /**
-   * Parse a JSON string into one or multiple worksheets.
-   * @param {string} jsonString
-   * @returns {{ success: boolean, worksheets?: Array, errors?: Array<string>, warnings?: Array<string> }}
-   */
+  // Разбор строки JSON (одиночный лист или массив листов)
   static parseJSON(jsonString) {
     if (!jsonString || typeof jsonString !== 'string') {
       return { success: false, errors: ['Пустая строка или некорректный формат данных.'] };
@@ -52,12 +45,7 @@ export class WorksheetParser {
     };
   }
 
-  /**
-   * Validate and normalize a single worksheet object.
-   * @param {Object} raw
-   * @param {number} itemIndex
-   * @returns {{ valid: boolean, worksheet?: Object, errors?: Array<string>, warnings?: Array<string> }}
-   */
+  // Проверка полей и нормализация одного листа
   static validateWorksheet(raw, itemIndex = 1) {
     const errors = [];
     const warnings = [];
@@ -67,7 +55,7 @@ export class WorksheetParser {
       return { valid: false, errors: [`${prefix}Элемент не является объектом.`] };
     }
 
-    // Required top-level fields
+    // Проверка обязательных полей
     if (raw.id === undefined || raw.id === null || String(raw.id).trim() === '') {
       errors.push(`${prefix}Отсутствует обязательное поле 'id'.`);
     }
@@ -90,7 +78,7 @@ export class WorksheetParser {
       errors.push(`${prefix}Отсутствует обязательное текстовое поле 'topic'.`);
     }
 
-    // Tasks validation
+    // Проверка заданий
     if (!Array.isArray(raw.tasks) || raw.tasks.length === 0) {
       errors.push(`${prefix}Поле 'tasks' должно быть непустым массивом заданий.`);
     }
@@ -117,7 +105,6 @@ export class WorksheetParser {
           warnings.push(`${taskPrefix}Рекомендуется добавить описание условия в 'description'.`);
         }
 
-        // Sanitize task
         validatedTasks.push({
           id: task.id || `task-${itemIndex}-${tIdx + 1}`,
           taskNumber: task.taskNumber || (tIdx + 1),
@@ -144,7 +131,7 @@ export class WorksheetParser {
       });
     }
 
-    // Rubric validation
+    // Проверка рубрики формативного оценивания
     const validatedRubric = [];
     if (!Array.isArray(raw.rubric) || raw.rubric.length === 0) {
       warnings.push(`${prefix}Отсутствует рубрика формативного оценивания 'rubric'. Будет создана базовая шкала.`);

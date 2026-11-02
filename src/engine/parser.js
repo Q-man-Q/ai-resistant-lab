@@ -1,13 +1,9 @@
-/**
- * Educational Python Parser
- * Constructs an AST with exact node source spans for visualization.
- */
+// Синтаксический анализатор (построение дерева AST)
 
 import { TokenType } from './lexer.js';
 
 export class Parser {
   constructor(tokens) {
-    // Filter out comments from active parsing tokens, but keep them accessible if needed
     this.allTokens = tokens;
     this.tokens = tokens.filter(t => t.type !== TokenType.COMMENT);
     this.pos = 0;
@@ -100,7 +96,7 @@ export class Parser {
       }
     }
 
-    // Assignment or expression statement
+    // Присваивание или выражение
     return this.parseSimpleStatement();
   }
 
@@ -290,7 +286,7 @@ export class Parser {
   parseSimpleStatement() {
     const expr = this.parseExpression();
 
-    // Check for assignment '=' or augmented assignment '+=', '-=', etc.
+    // Проверка операторов присваивания '=', '+=', '-='
     const peekTok = this.peek();
     if (peekTok.type === TokenType.OPERATOR && peekTok.value === '=') {
       const opTok = this.next();
@@ -334,7 +330,7 @@ export class Parser {
     };
   }
 
-  // Expression Parsing with Operator Precedence
+  // Разбор выражений с учетом приоритета операторов
 
   parseExpression() {
     return this.parseLogicalOr();
@@ -499,7 +495,7 @@ export class Parser {
     let expr = this.parsePrimary();
 
     while (true) {
-      // Function call: func(...)
+      // Вызов функции: func(...)
       if (this.match(TokenType.DELIMITER, '(')) {
         const args = [];
         if (!this.match(TokenType.DELIMITER, ')')) {
@@ -529,7 +525,7 @@ export class Parser {
         continue;
       }
 
-      // Subscript or Index: arr[i]
+      // Индексация списка: arr[i]
       if (this.match(TokenType.DELIMITER, '[')) {
         const indexExpr = this.parseExpression();
         const closeTok = this.expect(TokenType.DELIMITER, ']');
@@ -545,7 +541,7 @@ export class Parser {
         continue;
       }
 
-      // Member or method call: obj.method
+      // Обращение к свойству или методу: obj.method
       if (this.match(TokenType.DELIMITER, '.')) {
         const memberTok = this.expect(TokenType.NAME);
         expr = {
@@ -569,7 +565,7 @@ export class Parser {
   parsePrimary() {
     const tok = this.peek();
 
-    // Parenthesized expression
+    // Выражение в скобках
     if (this.match(TokenType.DELIMITER, '(')) {
       const expr = this.parseExpression();
       const closeTok = this.expect(TokenType.DELIMITER, ')');
@@ -582,7 +578,7 @@ export class Parser {
       };
     }
 
-    // List literal: [1, 2, 3]
+    // Литерал списка: [1, 2, 3]
     if (this.match(TokenType.DELIMITER, '[')) {
       const elements = [];
       if (!this.match(TokenType.DELIMITER, ']')) {
@@ -610,7 +606,7 @@ export class Parser {
       };
     }
 
-    // Number literal
+    // Числовой литерал
     if (tok.type === TokenType.NUMBER) {
       this.next();
       return {
@@ -625,7 +621,7 @@ export class Parser {
       };
     }
 
-    // String literal
+    // Строковый литерал
     if (tok.type === TokenType.STRING) {
       this.next();
       return {
@@ -641,7 +637,7 @@ export class Parser {
       };
     }
 
-    // Boolean or None keyword literal
+    // Логический литерал или None
     if (tok.type === TokenType.KEYWORD && (tok.value === true || tok.value === false || tok.value === null)) {
       this.next();
       return {
@@ -656,7 +652,7 @@ export class Parser {
       };
     }
 
-    // Name (identifier)
+    // Идентификатор
     if (tok.type === TokenType.NAME) {
       this.next();
       return {

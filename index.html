@@ -13,7 +13,6 @@
 </head>
 <body>
 
-  <!-- Шапка приложения -->
   <header class="app-header">
     <div class="brand-section">
       <div class="brand-icon">
@@ -29,13 +28,11 @@
     </div>
 
     <div class="header-controls">
-      <!-- Селектор листов -->
       <div class="sheet-selector-group">
         <label for="sheetSelect" class="selector-label">Рабочий лист:</label>
         <select id="sheetSelect" class="app-select"></select>
       </div>
 
-      <!-- Действия с листами -->
       <div class="header-action-buttons">
         <button class="btn btn-secondary" id="btnOpenImport" title="Импортировать рабочий лист из JSON файла">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
@@ -68,7 +65,6 @@
     </div>
   </header>
 
-  <!-- Навигация по вкладкам режимов -->
   <nav class="app-nav-tabs">
     <button class="nav-tab-btn active" id="tabWorksheet">
       <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
@@ -94,15 +90,11 @@
     </button>
   </nav>
 
-  <!-- Основной контейнер рабочей области -->
   <main class="app-content-container">
-    <!-- Вкладка 1: Рабочий лист -->
     <div id="worksheetContainer"></div>
 
-    <!-- Вкладка 2: Визуализатор -->
     <div id="visualizerContainer" style="display: none;"></div>
 
-    <!-- Вкладка 3: Песочница -->
     <div id="sandboxContainer" style="display: none;">
       <div class="sandbox-workbench">
         <div class="sandbox-header">
@@ -124,7 +116,6 @@
     </div>
   </main>
 
-  <!-- Модальное окно импорта листа -->
   <div class="modal-backdrop" id="importModal">
     <div class="modal-dialog">
       <div class="modal-header">
@@ -160,7 +151,6 @@
     </div>
   </div>
 
-  <!-- Модальное окно справки и методики -->
   <div class="modal-backdrop" id="aboutModal">
     <div class="modal-dialog">
       <div class="modal-header">
@@ -187,7 +177,6 @@
     </div>
   </div>
 
-  <!-- Главный скрипт приложения -->
   <script type="module" src="src/ui/app.js"></script>
 </body>
 </html>

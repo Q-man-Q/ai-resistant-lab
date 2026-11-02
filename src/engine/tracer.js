@@ -1,7 +1,4 @@
-/**
- * Educational Python Step Tracer & Virtual Machine
- * Generates granular educational steps for visualizing code execution.
- */
+// Пошаговый интерпретатор и генератор трассировки для визуализатора
 
 import { tokenize } from './lexer.js';
 import { parse } from './parser.js';

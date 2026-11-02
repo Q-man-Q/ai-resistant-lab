@@ -1,8 +1,4 @@
-/**
- * Main Application Orchestrator
- * Coordinates Worksheet and Visualizer modes, manages dynamic sheet imports/exports,
- * handles custom Python sandbox executions, and provides formative assessment analytics.
- */
+// Главный координатор интерфейса (переключение листов, вкладок и импорт)
 
 import { WorksheetStore } from '../data/worksheetStore.js';
 import { WorksheetParser } from '../data/worksheetParser.js';
@@ -30,7 +26,7 @@ print("Максимум:", max_val)`;
       visualizerContainer: document.querySelector('#visualizerContainer'),
       sandboxContainer: document.querySelector('#sandboxContainer'),
       
-      // Import Modal
+      // Модальное окно импорта
       btnOpenImport: document.querySelector('#btnOpenImport'),
       importModal: document.querySelector('#importModal'),
       btnCloseImportModal: document.querySelector('#btnCloseImportModal'),
@@ -41,11 +37,10 @@ print("Максимум:", max_val)`;
       btnSubmitImport: document.querySelector('#btnSubmitImport'),
       btnDownloadTemplate: document.querySelector('#btnDownloadTemplate'),
       
-      // Export & Reset
       btnExportSheet: document.querySelector('#btnExportSheet'),
       btnResetAll: document.querySelector('#btnResetAll'),
 
-      // About Modal
+      // Справка
       btnAbout: document.querySelector('#btnAbout'),
       aboutModal: document.querySelector('#aboutModal'),
       btnCloseModal: document.querySelector('#btnCloseModal'),
@@ -56,12 +51,10 @@ print("Максимум:", max_val)`;
     this.populateSheetSelect();
     this.bindEvents();
 
-    // Listen for store updates (e.g. after import/reset)
     this.store.onChange(() => {
       this.populateSheetSelect();
     });
 
-    // Select first available sheet
     const all = this.store.getAll();
     if (all.length > 0) {
       this.selectSheet(all[0].id);
@@ -69,14 +62,12 @@ print("Максимум:", max_val)`;
   }
 
   initViews() {
-    // 1. Worksheet View
     this.worksheetView = new WorksheetView(this.dom.worksheetContainer, {
       onOpenVisualizer: (code, inputs, task) => {
         this.openInVisualizer(code, inputs, task);
       }
     });
 
-    // 2. Visualizer View
     this.visualizerView = new VisualizerView(this.dom.visualizerContainer);
   }
 
@@ -109,17 +100,14 @@ print("Максимум:", max_val)`;
   }
 
   bindEvents() {
-    // Sheet selector
     this.dom.sheetSelect.addEventListener('change', (e) => {
       this.selectSheet(e.target.value);
     });
 
-    // Navigation Tabs
     this.dom.tabWorksheet.addEventListener('click', () => this.switchTab('worksheet'));
     this.dom.tabVisualizer.addEventListener('click', () => this.switchTab('visualizer'));
     this.dom.tabSandbox.addEventListener('click', () => this.switchTab('sandbox'));
 
-    // About modal
     const openAbout = () => this.dom.aboutModal.classList.add('open');
     const closeAbout = () => this.dom.aboutModal.classList.remove('open');
     if (this.dom.btnAbout) this.dom.btnAbout.addEventListener('click', openAbout);
@@ -131,7 +119,6 @@ print("Максимум:", max_val)`;
       });
     }
 
-    // Import modal open/close
     if (this.dom.btnOpenImport) {
       this.dom.btnOpenImport.addEventListener('click', () => {
         this.dom.importRawJson.value = '';
@@ -152,7 +139,6 @@ print("Максимум:", max_val)`;
       });
     }
 
-    // Dropzone & File Input
     if (this.dom.dropzone && this.dom.fileInput) {
       this.dom.dropzone.addEventListener('click', () => this.dom.fileInput.click());
       this.dom.dropzone.addEventListener('dragover', (e) => {
@@ -176,28 +162,24 @@ print("Максимум:", max_val)`;
       });
     }
 
-    // Submit Import
     if (this.dom.btnSubmitImport) {
       this.dom.btnSubmitImport.addEventListener('click', () => {
         this.handleImportSubmit();
       });
     }
 
-    // Download Template
     if (this.dom.btnDownloadTemplate) {
       this.dom.btnDownloadTemplate.addEventListener('click', () => {
         this.downloadTemplateFile();
       });
     }
 
-    // Export Sheet Button
     if (this.dom.btnExportSheet) {
       this.dom.btnExportSheet.addEventListener('click', () => {
         this.exportCurrentSheet();
       });
     }
 
-    // Reset All Button
     if (this.dom.btnResetAll) {
       this.dom.btnResetAll.addEventListener('click', () => {
         if (confirm('Сбросить все импортированные листы и вернуться к стандартному банку из 7 листов?')) {
@@ -208,7 +190,6 @@ print("Максимум:", max_val)`;
       });
     }
 
-    // Sandbox editor
     const btnRunSandbox = document.querySelector('#btnRunSandbox');
     const sandboxEditor = document.querySelector('#sandboxEditor');
     if (btnRunSandbox && sandboxEditor) {
@@ -358,7 +339,6 @@ print("Максимум:", max_val)`;
   }
 }
 
-// Bootstrap on DOM load
 window.addEventListener('DOMContentLoaded', () => {
   window.app = new App();
 });

@@ -1,27 +1,18 @@
-/* ==========================================================================
-   AI-Resistant Informatics Lab: Base Design System (Unslop Standard)
-   Clean academic typography, slate neutral palette, crisp borders, subtle elevation.
-   ========================================================================== */
-
 :root {
-  /* Neutrals */
   --bg-app: #f8fafc;
   --bg-surface: #ffffff;
   --bg-subtle: #f1f5f9;
   --bg-muted: #e2e8f0;
 
-  /* Text & Foreground */
   --text-primary: #0f172a;
   --text-secondary: #475569;
   --text-muted: #64748b;
   --text-inverse: #ffffff;
 
-  /* Borders & Dividers */
   --border-light: #e2e8f0;
   --border-strong: #cbd5e1;
   --border-focus: #3b82f6;
 
-  /* Semantic Accents */
   --color-primary: #1e293b;
   --color-primary-hover: #0f172a;
   --color-brand: #2563eb;
@@ -34,16 +25,13 @@
   --color-info: #0284c7;
   --color-info-bg: #f0f9ff;
 
-  /* Typography */
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Monaco, Consolas, monospace;
 
-  /* Elevation */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
 
-  /* Radius */
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 8px;
@@ -65,10 +53,6 @@ body {
   display: flex;
   flex-direction: column;
 }
-
-/* ==========================================================================
-   Header & Navigation
-   ========================================================================== */
 
 .app-header {
   background-color: var(--bg-surface);
@@ -158,7 +142,6 @@ body {
   gap: 6px;
 }
 
-/* Tab Navigation */
 .app-nav-tabs {
   background-color: var(--bg-surface);
   border-bottom: 1px solid var(--border-light);
@@ -191,10 +174,6 @@ body {
   border-bottom-color: var(--color-brand);
   font-weight: 600;
 }
-
-/* ==========================================================================
-   Buttons & Tags
-   ========================================================================== */
 
 .btn {
   font-family: var(--font-sans);
@@ -274,10 +253,6 @@ body {
   font-size: 11px;
 }
 
-/* ==========================================================================
-   Main Application Body
-   ========================================================================== */
-
 .app-content-container {
   flex: 1;
   padding: 20px;
@@ -312,10 +287,6 @@ body {
   font-size: 12px;
   color: var(--text-muted);
 }
-
-/* ==========================================================================
-   Modal Dialogs
-   ========================================================================== */
 
 .modal-backdrop {
   position: fixed;
@@ -379,10 +350,6 @@ body {
   border-bottom-left-radius: var(--radius-lg);
   border-bottom-right-radius: var(--radius-lg);
 }
-
-/* ==========================================================================
-   Print Styles
-   ========================================================================== */
 
 @media print {
   .app-header, .app-nav-tabs, .task-bridge-bar, .sheet-action-bar, .task-action-row, .modal-backdrop {
