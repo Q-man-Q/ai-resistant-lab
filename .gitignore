@@ -1,3 +1,6 @@
 school_source/
 .DS_Store
 *.log
+src/services/firebaseConfig.js
+*.secret*
+.env*
