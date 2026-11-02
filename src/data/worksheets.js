@@ -37,10 +37,10 @@ else:
 print(cost)`,
         defaultInputs: ["6", "0"],
         traceTests: [
-          { testNum: 1, inputs: "v = 6, k = 0", branchHint: "if v < 7", expectedBranch: "v < 7", expectedCost: 0, points: 0.5 },
-          { testNum: 2, inputs: "v = 10, k = 1", branchHint: "elif v <= 11 -> if k == 1", expectedBranch: "k == 1", expectedCost: 250, points: 0.5 },
-          { testNum: 3, inputs: "v = 14, k = 0", branchHint: "elif v <= 17 -> else", expectedBranch: "else", expectedCost: 600, points: 0.5 },
-          { testNum: 4, inputs: "v = 18, k = 1", branchHint: "else", expectedBranch: "else", expectedCost: 800, points: 0.5 }
+          { testNum: 1, inputs: "v = 6, k = 0", expectedBranch: "v < 7", expectedCost: 0, points: 0.5 },
+          { testNum: 2, inputs: "v = 10, k = 1", expectedBranch: "k == 1", expectedCost: 250, points: 0.5 },
+          { testNum: 3, inputs: "v = 14, k = 0", expectedBranch: "else", expectedCost: 600, points: 0.5 },
+          { testNum: 4, inputs: "v = 18, k = 1", expectedBranch: "else", expectedCost: 800, points: 0.5 }
         ],
         conceptQuestion: {
           text: "Почему при возрасте v = 6 значение социальной карты k не влияет на итоговую стоимость обеда?",
@@ -116,18 +116,7 @@ b = int(input())
 c = int(input())
 
 # Напишите алгоритм поиска максимума на вложенных if-else:
-if a > b:
-    if a > c:
-        maximum = a
-    else:
-        maximum = c
-else:
-    if b > c:
-        maximum = b
-    else:
-        maximum = c
-
-print(maximum)`,
+`,
         testCases: [
           { inputs: ["5", "9", "2"], expected: "9" },
           { inputs: ["15", "4", "7"], expected: "15" },
@@ -145,20 +134,8 @@ print(maximum)`,
         starterCode: `age = int(input())
 card = input()
 
-if age < 7:
-    price = 0
-elif age <= 15:
-    if card == "карта":
-        price = 50
-    else:
-        price = 100
-else:
-    if card == "карта":
-        price = 100
-    else:
-        price = 200
-
-print(price)`,
+# Запишите расчет стоимости билета по тарифам:
+`,
         conceptQuestion: {
           text: "Почему в ветке elif age <= 15 не нужно повторно проверять условие age >= 7?",
           expected: "Потому что все значения age < 7 уже были отсеяны предыдущим блоком if age < 7."
@@ -242,9 +219,9 @@ print("Партия проверена!")`,
         bannedKeywords: ["continue"],
         starterCode: `word = input()
 vowels = "АЕЁИОУЫЭЮЯ"
-for char in word:
-    if char not in vowels:
-        print(char, end=" ")`,
+
+# Выведите все согласные через пробел без команды continue:
+`,
         points: 3
       }
     ],
@@ -303,16 +280,9 @@ while i <= 10:
         model: "Практико-ориентированная задача",
         description: "Бюджет 1000 тенге. Вводятся цены покупок. Если цена больше остатка, покупка отменяется, цикл продолжается. При нулевом остатке цикл завершается по break.",
         starterCode: `budget = 1000
-while budget > 0:
-    price = int(input())
-    if price > budget:
-        print("Недостаточно средств")
-        continue
-    budget = budget - price
-    print("Остаток:", budget)
-    if budget == 0:
-        print("Бюджет исчерпан")
-        break`,
+
+# Напишите цикл учета расходов:
+`,
         points: 3
       },
       {
@@ -322,13 +292,9 @@ while budget > 0:
         title: "Задание 3. Контроль качества молока с конструкцией else",
         model: "Алгоритм с блоком else цикла",
         description: "Проверяется партия из 5 пачек (статус 1 - норма, 0 - брак). При браке - аварийный выход по break. Если вся партия без брака - вывод поздравления через блок else цикла.",
-        starterCode: `for box in range(1, 6):
-    status = int(input())
-    if status == 0:
-        print("Обнаружен брак в пачке №", box)
-        break
-else:
-    print("Вся партия проверена успешно!")`,
+        starterCode: `# Проверка партии из 5 пачек (1 - норма, 0 - брак)
+# Напишите алгоритм с конструкцией else цикла:
+`,
         points: 3
       }
     ],
@@ -403,22 +369,9 @@ print(minimum)`,
         description: "Дан список чисел. Найдите второй по величине элемент. Условие: запрещено использовать max, min, sort, sorted. Решите за один проход с переменными max1 и max2.",
         bannedKeywords: ["max", "min", "sort", "sorted"],
         starterCode: `a = [14, 28, 9, 31, 22]
-if a[0] > a[1]:
-    max1 = a[0]
-    max2 = a[1]
-else:
-    max1 = a[1]
-    max2 = a[0]
 
-for i in range(2, len(a)):
-    x = a[i]
-    if x > max1:
-        max2 = max1
-        max1 = x
-    elif x > max2:
-        max2 = x
-
-print(max2)`,
+# Найдите второй по величине элемент за один проход без сортировки:
+`,
         points: 3
       }
     ],
@@ -452,25 +405,10 @@ print(max2)`,
         bannedKeywords: ["sum"],
         starterCode: `grades = [10, 8, 9, 3, 7, 10, 2, 8]
 
-# 1. Отличники
-otl = 0
-# 2. Сумма для среднего балла
-total = 0
-for g in grades:
-    if g >= 9:
-        otl = otl + 1
-    total = total + g
-
-avg = total / len(grades)
-print("Отличников:", otl)
-print("Средний балл:", avg)
-
-# 3. Группа риска (< 4)
-risk = []
-for g in grades:
-    if g < 4:
-        risk.append(g)
-print("Группа риска:", risk)`,
+# 1. Подсчитайте отличников (>= 9)
+# 2. Найдите средний балл класса без функции sum()
+# 3. Выведите группу риска (< 4)
+`,
         points: 6
       },
       {
@@ -551,19 +489,9 @@ print("Дни выше средней:", hot_days)`,
         bannedKeywords: ["sum", "enumerate", "[i for"],
         starterCode: `temps = [18, 21, 19, 24, 22, 17, 25]
 
-# 1. Находим сумму температур через цикл
-total = 0
-for t in temps:
-    total = total + t
-
-avg = total / len(temps)
-print("Средняя температура:", avg)
-
-# 2. Выводим номера дней (начиная с 1)
-print("Дни выше средней:")
-for i in range(len(temps)):
-    if temps[i] > avg:
-        print("День", i + 1, ":", temps[i])`,
+# 1. Найдите сумму и среднюю температуру через цикл (без sum)
+# 2. Выведите номера дней с температурой выше средней
+`,
         points: 5
       }
     ],

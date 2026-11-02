@@ -153,15 +153,15 @@ export class WorksheetView {
             <div class="reflection-questions">
               <label class="ref-field">
                 <span>1. Что на сегодняшнем уроке получилось выполнить легко и уверенно?</span>
-                <textarea class="textarea-ref" id="refEasy" rows="2" placeholder="Например: быстро локализовал ошибку в типах данных...">${this.escape(this.studentState.refEasy || '')}</textarea>
+                <textarea class="textarea-ref" id="refEasy" rows="2" placeholder="Ваш ответ...">${this.escape(this.studentState.refEasy || '')}</textarea>
               </label>
               <label class="ref-field">
                 <span>2. В каких строках кода или алгоритмических шагах возникли затруднения?</span>
-                <textarea class="textarea-ref" id="refHard" rows="2" placeholder="Например: сомневался в значении переменной цикла на 3 шаге...">${this.escape(this.studentState.refHard || '')}</textarea>
+                <textarea class="textarea-ref" id="refHard" rows="2" placeholder="Ваш ответ...">${this.escape(this.studentState.refHard || '')}</textarea>
               </label>
               <label class="ref-field">
                 <span>3. Какой способ помог найти решение (трассировка, пошаговый разбор, проверка типов)?</span>
-                <textarea class="textarea-ref" id="refHelp" rows="2" placeholder="Например: пошаговый визуализатор показал точное значение в памяти...">${this.escape(this.studentState.refHelp || '')}</textarea>
+                <textarea class="textarea-ref" id="refHelp" rows="2" placeholder="Ваш ответ...">${this.escape(this.studentState.refHelp || '')}</textarea>
               </label>
             </div>
 
@@ -275,12 +275,12 @@ export class WorksheetView {
                     <td>
                       <input type="text" class="input-cell trace-branch-input" 
                         data-task="${task.id}" data-test="${t.testNum}" 
-                        placeholder="${this.escape(t.branchHint)}" value="${this.escape(ansBranch)}">
+                        placeholder="Условие / ветка" value="${this.escape(ansBranch)}">
                     </td>
                     <td>
                       <input type="number" class="input-cell trace-cost-input" 
                         data-task="${task.id}" data-test="${t.testNum}" 
-                        placeholder="cost = ?" value="${this.escape(ansCost)}">
+                        placeholder="cost" value="${this.escape(ansCost)}">
                     </td>
                     <td style="text-align: center;">
                       ${status === 'correct' ? '<span class="status-tag status-ok">Верно</span>' : 
@@ -442,7 +442,7 @@ export class WorksheetView {
           <label class="debug-label">
             <span class="debug-q-text">Запишите исправленный вариант программы:</span>
             <textarea class="code-editor-box debug-code-editor" data-task="${task.id}" rows="7" 
-              spellcheck="false">${this.escape(this.studentState[`debug_${task.id}_code`] || task.fixedCodeTemplate || task.buggyCode)}</textarea>
+              spellcheck="false">${this.escape(this.studentState[`debug_${task.id}_code`] !== undefined ? this.studentState[`debug_${task.id}_code`] : (task.buggyCode || ''))}</textarea>
           </label>
         </div>
 

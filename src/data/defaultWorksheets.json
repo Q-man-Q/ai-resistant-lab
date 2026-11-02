@@ -23,7 +23,6 @@
           {
             "testNum": 1,
             "inputs": "v = 6, k = 0",
-            "branchHint": "if v < 7",
             "expectedBranch": "v < 7",
             "expectedCost": 0,
             "points": 0.5
@@ -31,7 +30,6 @@
           {
             "testNum": 2,
             "inputs": "v = 10, k = 1",
-            "branchHint": "elif v <= 11 -> if k == 1",
             "expectedBranch": "k == 1",
             "expectedCost": 250,
             "points": 0.5
@@ -39,7 +37,6 @@
           {
             "testNum": 3,
             "inputs": "v = 14, k = 0",
-            "branchHint": "elif v <= 17 -> else",
             "expectedBranch": "else",
             "expectedCost": 600,
             "points": 0.5
@@ -47,7 +44,6 @@
           {
             "testNum": 4,
             "inputs": "v = 18, k = 1",
-            "branchHint": "else",
             "expectedBranch": "else",
             "expectedCost": 800,
             "points": 0.5
@@ -162,7 +158,7 @@
           "]",
           "sorted"
         ],
-        "starterCode": "a = int(input())\nb = int(input())\nc = int(input())\n\n# Напишите алгоритм поиска максимума на вложенных if-else:\nif a > b:\n    if a > c:\n        maximum = a\n    else:\n        maximum = c\nelse:\n    if b > c:\n        maximum = b\n    else:\n        maximum = c\n\nprint(maximum)",
+        "starterCode": "a = int(input())\nb = int(input())\nc = int(input())\n\n# Напишите алгоритм поиска максимума на вложенных if-else:\n",
         "testCases": [
           {
             "inputs": [
@@ -198,7 +194,7 @@
         "title": "Задание 2. Расчет стоимости проезда в городском автобусе",
         "model": "Практико-ориентированная задача",
         "description": "Тарифы: до 7 лет - бесплатно (0); от 7 до 15 лет включительно: по карте 50 тг, наличными 100 тг; от 16 лет: по карте 100 тг, наличными 200 тг. Запросите возраст age и способ card ('карта' или 'наличные'), выведите стоимость билета.",
-        "starterCode": "age = int(input())\ncard = input()\n\nif age < 7:\n    price = 0\nelif age <= 15:\n    if card == \"карта\":\n        price = 50\n    else:\n        price = 100\nelse:\n    if card == \"карта\":\n        price = 100\n    else:\n        price = 200\n\nprint(price)",
+        "starterCode": "age = int(input())\ncard = input()\n\n# Запишите расчет стоимости билета по тарифам:\n",
         "conceptQuestion": {
           "text": "Почему в ветке elif age <= 15 не нужно повторно проверять условие age >= 7?",
           "expected": "Потому что все значения age < 7 уже были отсеяны предыдущим блоком if age < 7."
@@ -376,7 +372,7 @@
         "bannedKeywords": [
           "continue"
         ],
-        "starterCode": "word = input()\nvowels = \"АЕЁИОУЫЭЮЯ\"\nfor char in word:\n    if char not in vowels:\n        print(char, end=\" \")",
+        "starterCode": "word = input()\nvowels = \"АЕЁИОУЫЭЮЯ\"\n\n# Выведите все согласные через пробел без команды continue:\n",
         "points": 3
       }
     ],
@@ -464,7 +460,7 @@
         "title": "Задание 2. Контроль карманных расходов с бюджетом 1000 тенге",
         "model": "Практико-ориентированная задача",
         "description": "Бюджет 1000 тенге. Вводятся цены покупок. Если цена больше остатка, покупка отменяется, цикл продолжается. При нулевом остатке цикл завершается по break.",
-        "starterCode": "budget = 1000\nwhile budget > 0:\n    price = int(input())\n    if price > budget:\n        print(\"Недостаточно средств\")\n        continue\n    budget = budget - price\n    print(\"Остаток:\", budget)\n    if budget == 0:\n        print(\"Бюджет исчерпан\")\n        break",
+        "starterCode": "budget = 1000\n\n# Напишите цикл учета расходов:\n",
         "points": 3
       },
       {
@@ -474,7 +470,7 @@
         "title": "Задание 3. Контроль качества молока с конструкцией else",
         "model": "Алгоритм с блоком else цикла",
         "description": "Проверяется партия из 5 пачек (статус 1 - норма, 0 - брак). При браке - аварийный выход по break. Если вся партия без брака - вывод поздравления через блок else цикла.",
-        "starterCode": "for box in range(1, 6):\n    status = int(input())\n    if status == 0:\n        print(\"Обнаружен брак в пачке №\", box)\n        break\nelse:\n    print(\"Вся партия проверена успешно!\")",
+        "starterCode": "# Проверка партии из 5 пачек (1 - норма, 0 - брак)\n# Напишите алгоритм с конструкцией else цикла:\n",
         "points": 3
       }
     ],
@@ -614,7 +610,7 @@
           "sort",
           "sorted"
         ],
-        "starterCode": "a = [14, 28, 9, 31, 22]\nif a[0] > a[1]:\n    max1 = a[0]\n    max2 = a[1]\nelse:\n    max1 = a[1]\n    max2 = a[0]\n\nfor i in range(2, len(a)):\n    x = a[i]\n    if x > max1:\n        max2 = max1\n        max1 = x\n    elif x > max2:\n        max2 = x\n\nprint(max2)",
+        "starterCode": "a = [14, 28, 9, 31, 22]\n\n# Найдите второй по величине элемент за один проход без сортировки:\n",
         "points": 3
       }
     ],
@@ -674,7 +670,7 @@
         "bannedKeywords": [
           "sum"
         ],
-        "starterCode": "grades = [10, 8, 9, 3, 7, 10, 2, 8]\n\n# 1. Отличники\notl = 0\n# 2. Сумма для среднего балла\ntotal = 0\nfor g in grades:\n    if g >= 9:\n        otl = otl + 1\n    total = total + g\n\navg = total / len(grades)\nprint(\"Отличников:\", otl)\nprint(\"Средний балл:\", avg)\n\n# 3. Группа риска (< 4)\nrisk = []\nfor g in grades:\n    if g < 4:\n        risk.append(g)\nprint(\"Группа риска:\", risk)",
+        "starterCode": "grades = [10, 8, 9, 3, 7, 10, 2, 8]\n\n# 1. Подсчитайте отличников (>= 9)\n# 2. Найдите средний балл класса без функции sum()\n# 3. Выведите группу риска (< 4)\n",
         "points": 6
       },
       {
@@ -796,7 +792,7 @@
           "enumerate",
           "[i for"
         ],
-        "starterCode": "temps = [18, 21, 19, 24, 22, 17, 25]\n\n# 1. Находим сумму температур через цикл\ntotal = 0\nfor t in temps:\n    total = total + t\n\navg = total / len(temps)\nprint(\"Средняя температура:\", avg)\n\n# 2. Выводим номера дней (начиная с 1)\nprint(\"Дни выше средней:\")\nfor i in range(len(temps)):\n    if temps[i] > avg:\n        print(\"День\", i + 1, \":\", temps[i])",
+        "starterCode": "temps = [18, 21, 19, 24, 22, 17, 25]\n\n# 1. Найдите сумму и среднюю температуру через цикл (без sum)\n# 2. Выведите номера дней с температурой выше средней\n",
         "points": 5
       }
     ],
