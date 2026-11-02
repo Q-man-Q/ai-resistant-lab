@@ -772,7 +772,7 @@ export class WorksheetView {
 
         const score = this.calculateTotalScore();
         const payload = {
-          worksheetId: this.worksheet.id,
+          worksheetId: String(this.worksheet.id),
           worksheetTitle: this.worksheet.title,
           grade: this.worksheet.grade,
           studentName: name,
