@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Интерактивная лаборатория ИИ-резистентных учебных заданий</title>
+  <meta name="description" content="Веб-лаборатория для выполнения ИИ-резистентных рабочих листов и пошаговой визуализации работы интерпретатора Python на уроках информатики (7-9 классы).">
+  
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/worksheet.css">
+  <link rel="stylesheet" href="styles/visualizer.css">
+  <link rel="stylesheet" href="styles/import.css">
+</head>
+<body>
+
+  <!-- Шапка приложения -->
+  <header class="app-header">
+    <div class="brand-section">
+      <div class="brand-icon">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
+          <path d="M4 4h8v1H4V4zm0 3h8v1H4V7zm0 3h5v1H4v-1z"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1>Лаборатория ИИ-резистентных заданий</h1>
+        <p>Информатика 7–9 классы | ТУП РК | Пошаговый визуализатор RAM</p>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <!-- Селектор листов -->
+      <div class="sheet-selector-group">
+        <label for="sheetSelect" class="selector-label">Рабочий лист:</label>
+        <select id="sheetSelect" class="app-select"></select>
+      </div>
+
+      <!-- Действия с листами -->
+      <div class="header-action-buttons">
+        <button class="btn btn-secondary" id="btnOpenImport" title="Импортировать рабочий лист из JSON файла">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+            <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V10.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+          </svg>
+          <span>Импорт</span>
+        </button>
+
+        <button class="btn btn-secondary" id="btnExportSheet" title="Экспортировать текущий лист в JSON файл">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+          </svg>
+          <span>Экспорт</span>
+        </button>
+
+        <button class="btn btn-ghost" id="btnResetAll" title="Сбросить импортированные листы к стандартным 7 листам">
+          <span>Сброс</span>
+        </button>
+
+        <button class="btn btn-ghost" id="btnAbout" title="О методике и системе оценивания">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+            <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+          </svg>
+          <span>Справка</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Навигация по вкладкам режимов -->
+  <nav class="app-nav-tabs">
+    <button class="nav-tab-btn active" id="tabWorksheet">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M4 0h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm0 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H4z"/>
+        <path d="M4.5 4h7v1h-7V4zm0 3h7v1h-7V7zm0 3h4v1h-4v-1z"/>
+      </svg>
+      <span>Рабочий лист</span>
+    </button>
+
+    <button class="nav-tab-btn" id="tabVisualizer">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/>
+        <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A4.985 4.985 0 0 1 8 2c2.51 0 4.57 1.844 4.943 4.256a.5.5 0 1 1-.986.155A4.002 4.002 0 0 0 8 3zM3.057 9.744A.5.5 0 0 1 4.043 9.589 4.002 4.002 0 0 0 8 13c1.552 0 2.94-.707 3.857-1.818a.5.5 0 1 1 .771.636A4.985 4.985 0 0 1 8 14c-2.51 0-4.57-1.844-4.943-4.256z"/>
+      </svg>
+      <span>Интерактивный разбор (Визуализатор RAM)</span>
+    </button>
+
+    <button class="nav-tab-btn" id="tabSandbox">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+        <path d="M10.478 1.647a.5.5 0 1 0-.956-.294l-4 13a.5.5 0 0 0 .956.294l4-13zM4.854 4.146a.5.5 0 0 1 0 .708L1.707 8l3.147 3.146a.5.5 0 0 1-.708.708l-3.5-3.5a.5.5 0 0 1 0-.708l3.5-3.5a.5.5 0 0 1 .708 0zm6.292 0a.5.5 0 0 0 0 .708L14.293 8l-3.147 3.146a.5.5 0 0 0 .708.708l3.5-3.5a.5.5 0 0 0 0-.708l-3.5-3.5a.5.5 0 0 0-.708 0z"/>
+      </svg>
+      <span>Песочница Python</span>
+    </button>
+  </nav>
+
+  <!-- Основной контейнер рабочей области -->
+  <main class="app-content-container">
+    <!-- Вкладка 1: Рабочий лист -->
+    <div id="worksheetContainer"></div>
+
+    <!-- Вкладка 2: Визуализатор -->
+    <div id="visualizerContainer" style="display: none;"></div>
+
+    <!-- Вкладка 3: Песочница -->
+    <div id="sandboxContainer" style="display: none;">
+      <div class="sandbox-workbench">
+        <div class="sandbox-header">
+          <h2 class="sandbox-title">Свободная песочница Python</h2>
+          <p class="sandbox-desc">Введите произвольную программу на языке Python для пошагового наблюдения за состоянием оперативной памяти и выполнением выражений.</p>
+        </div>
+        <div class="sandbox-editor-wrapper">
+          <textarea id="sandboxEditor" class="sandbox-code-textarea" rows="12" spellcheck="false"></textarea>
+        </div>
+        <div class="sandbox-actions">
+          <button class="btn btn-primary" id="btnRunSandbox">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M4 2l10 6-10 6V2z"/>
+            </svg>
+            <span>Запустить в визуализаторе</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Модальное окно импорта листа -->
+  <div class="modal-backdrop" id="importModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">Импорт рабочего листа (.json)</h3>
+        <button class="btn btn-ghost" id="btnCloseImportModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="dropzone-container" id="dropzone">
+          <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          <div class="dropzone-title">Перетащите сюда JSON-файл рабочего листа</div>
+          <div class="dropzone-hint">или нажмите для выбора файла на диске</div>
+          <input type="file" id="fileInput" accept=".json" style="display: none;">
+        </div>
+
+        <div class="import-or-divider"><span>или вставьте текст JSON</span></div>
+
+        <textarea id="importRawJson" class="import-textarea" placeholder="Вставьте сюда содержимое JSON-файла рабочего листа..."></textarea>
+
+        <div id="importStatus" class="import-status-box"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnDownloadTemplate">
+          <span>Скачать шаблон (.json)</span>
+        </button>
+        <button class="btn btn-primary" id="btnSubmitImport">
+          <span>Импортировать в лабораторию</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно справки и методики -->
+  <div class="modal-backdrop" id="aboutModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">О методике применения ИИ-резистентных заданий</h3>
+        <button class="btn btn-ghost" id="btnCloseModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <p style="margin-bottom: 12px;">Данная интерактивная среда разработана в рамках дипломной работы по теме <strong>«Разработка и апробация методики применения ИИ-резистентных учебных заданий при обучении школьной информатике»</strong> (Казахстан, бакалавриат, специальность «Информатика»).</p>
+        
+        <h4 style="font-size: 14px; font-weight: 600; margin: 14px 0 6px;">4 дидактические модели заданий:</h4>
+        <ul style="padding-left: 20px; margin-bottom: 14px; line-height: 1.6;">
+          <li><strong>Ручная пошаговая трассировка ветвлений и циклов:</strong> развивает навык ментальной симуляции работы процессора и состояний ячеек памяти.</li>
+          <li><strong>Направленная отладка (дебаггинг):</strong> поиск и устранение дефектов типов данных (TypeError), логики аккумуляторов и бесконечных циклов.</li>
+          <li><strong>Задачи с жесткими дидактическими ограничениями:</strong> блокируют готовые нейросетевые конструкции (запреты на <code>max()</code>, <code>and</code>, <code>sum()</code>, срезы списков).</li>
+          <li><strong>Критический аудит решений генеративного ИИ:</strong> экспертиза кода нейросетей учащимися на соответствие школьной программе.</li>
+        </ul>
+
+        <h4 style="font-size: 14px; font-weight: 600; margin: 14px 0 6px;">Критериальное оценивание:</h4>
+        <p style="line-height: 1.6;">Каждый рабочий лист оценивается по 10-балльной шкале формативного оценивания ТУП РК. Приложение автоматически сопоставляет ответы учащегося с дескрипторами рубрики и формирует индивидуальный диагностический профиль.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="btnCloseAboutBtn">Понятно</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Главный скрипт приложения -->
+  <script type="module" src="src/ui/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+/* ==========================================================================
+   AI-Resistant Informatics Lab: Import / Export & Sandbox Styles
+   ========================================================================== */
+
+/* Import Dropzone */
+.dropzone-container {
+  border: 2px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  text-align: center;
+  background-color: var(--bg-subtle);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-bottom: 16px;
+}
+
+.dropzone-container:hover, .dropzone-container.dragover {
+  border-color: var(--color-brand);
+  background-color: #eff6ff;
+}
+
+.dropzone-icon {
+  width: 36px;
+  height: 36px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.dropzone-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.dropzone-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.import-or-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 14px 0;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.import-or-divider::before, .import-or-divider::after {
+  content: "";
+  flex: 1;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.import-or-divider span {
+  padding: 0 10px;
+}
+
+.import-textarea {
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background-color: #0f172a;
+  color: #e2e8f0;
+  resize: vertical;
+  min-height: 140px;
+  outline: none;
+}
+
+.import-textarea:focus {
+  border-color: var(--border-focus);
+}
+
+.import-status-box {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 12.5px;
+  display: none;
+}
+
+.import-status-box.success {
+  display: block;
+  background-color: var(--color-success-bg);
+  border: 1px solid #86efac;
+  color: #166534;
+}
+
+.import-status-box.error {
+  display: block;
+  background-color: var(--color-danger-bg);
+  border: 1px solid #fca5a5;
+  color: #991b1b;
+}
+
+.import-status-box.warning {
+  display: block;
+  background-color: var(--color-warning-bg);
+  border: 1px solid #fde68a;
+  color: #92400e;
+}
+
+/* Python Sandbox View */
+.sandbox-workbench {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.sandbox-header {
+  margin-bottom: 16px;
+}
+
+.sandbox-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.sandbox-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.sandbox-editor-wrapper {
+  margin-bottom: 16px;
+}
+
+.sandbox-code-textarea {
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  background-color: #0f172a;
+  color: #e2e8f0;
+  border: 1px solid #1e293b;
+  border-radius: var(--radius-md);
+  padding: 14px;
+  outline: none;
+  resize: vertical;
+  tab-size: 4;
+}
+
+.sandbox-code-textarea:focus {
+  border-color: var(--border-focus);
+}
+
+.sandbox-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
