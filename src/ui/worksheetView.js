@@ -556,21 +556,6 @@ export class WorksheetView {
   }
 
   bindEvents() {
-    const nameInput = this.viewport.querySelector('#studentNameInput');
-    const classInput = this.viewport.querySelector('#studentClassInput');
-    if (nameInput) {
-      nameInput.addEventListener('input', (e) => {
-        this.studentState.studentName = e.target.value;
-        this.saveState();
-      });
-    }
-    if (classInput) {
-      classInput.addEventListener('input', (e) => {
-        this.studentState.studentClass = e.target.value;
-        this.saveState();
-      });
-    }
-
     this.viewport.querySelectorAll('.trace-branch-input, .trace-cost-input').forEach(input => {
       input.addEventListener('input', (e) => {
         const taskId = e.target.dataset.task;
