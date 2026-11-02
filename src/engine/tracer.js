@@ -204,7 +204,7 @@ export class Tracer {
         this.addStep({
           node: stmt,
           action: 'PASS',
-          message: 'Команда pass ничего не делает — просто переходим дальше.',
+          message: 'Команда pass ничего не делает - просто переходим дальше.',
           pose: 'idle'
         });
         break;
