@@ -355,6 +355,114 @@ body {
   border-bottom-right-radius: var(--radius-lg);
 }
 
+/* Мобильная адаптация интерфейса */
+@media screen and (max-width: 768px) {
+  .app-header {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .brand-section {
+    justify-content: space-between;
+  }
+
+  .brand-text h1 {
+    font-size: 14px;
+  }
+
+  .brand-text p {
+    font-size: 10px;
+  }
+
+  .header-controls {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .sheet-selector-group {
+    width: 100%;
+  }
+
+  .selector-label {
+    display: none;
+  }
+
+  .app-select {
+    width: 100%;
+    max-width: 100%;
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+
+  .header-action-buttons {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .header-action-buttons .btn {
+    flex: 1 1 calc(33.3% - 6px);
+    padding: 8px 6px;
+    font-size: 11px;
+    justify-content: center;
+  }
+
+  #btnTeacherAuth {
+    flex: 1 1 100%;
+  }
+
+  .app-nav-tabs {
+    padding: 0 8px;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .app-nav-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-tab-btn {
+    flex-shrink: 0;
+    padding: 10px 10px;
+    font-size: 12px;
+  }
+
+  .app-content-container {
+    padding: 10px 8px;
+  }
+
+  .modal-dialog {
+    width: 95vw !important;
+    max-width: 95vw !important;
+    max-height: 92vh;
+    margin: 12px auto;
+  }
+
+  .modal-header {
+    padding: 12px 16px;
+  }
+
+  .modal-body {
+    padding: 14px 16px;
+  }
+
+  .modal-footer {
+    padding: 10px 16px;
+    flex-wrap: wrap;
+  }
+
+  .modal-footer .btn {
+    width: 100%;
+  }
+}
+
 @media print {
   .app-header, .app-nav-tabs, .task-bridge-bar, .sheet-action-bar, .task-action-row, .modal-backdrop {
     display: none !important;

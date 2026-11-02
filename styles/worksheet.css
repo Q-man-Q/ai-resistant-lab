@@ -745,6 +745,165 @@
   overflow-x: auto;
 }
 
+/* Мобильная адаптация рабочих листов и журнала учителя */
+@media screen and (max-width: 768px) {
+  .worksheet-document {
+    padding: 14px 12px;
+    border-radius: var(--radius-md);
+  }
+
+  .sheet-title {
+    font-size: 17px;
+  }
+
+  .sheet-student-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .student-info-fields {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .student-name,
+  .student-class {
+    width: 100% !important;
+    font-size: 14px;
+    padding: 8px 10px;
+  }
+
+  .sheet-score-card {
+    width: 100%;
+    text-align: left;
+    border-top: 1px dashed var(--border-strong);
+    padding-top: 10px;
+  }
+
+  .task-card {
+    padding: 14px 12px;
+    border-radius: var(--radius-md);
+  }
+
+  .task-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .task-code-wrapper,
+  .code-viewer-wrapper,
+  .code-editor-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .code-editor-box {
+    font-size: 13px;
+    padding: 8px;
+    min-height: 140px;
+  }
+
+  .trace-table-container,
+  .rubric-table-container,
+  .rubric-table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .trace-table th,
+  .trace-table td,
+  .rubric-table th,
+  .rubric-table td {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+
+  .traffic-options {
+    flex-direction: column;
+    width: 100%;
+    gap: 6px;
+  }
+
+  .traffic-btn {
+    width: 100%;
+    font-size: 13px;
+    padding: 10px 12px;
+  }
+
+  .sheet-action-bar {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .sheet-action-bar .btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+    justify-content: center;
+  }
+
+  /* Журнал учителя на мобильных */
+  .teacher-dashboard {
+    padding: 0;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .dashboard-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+
+  .dashboard-actions .btn {
+    font-size: 11px;
+    padding: 8px 6px;
+    justify-content: center;
+  }
+
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px;
+  }
+
+  .dashboard-filters {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .filter-group {
+    width: 100%;
+  }
+
+  .filter-group .app-select {
+    width: 100%;
+  }
+
+  .submissions-table-container,
+  .dashboard-table-wrapper {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .review-meta-bar {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+
 /* Стили печати бланка */
 @media print {
   .app-header,
