@@ -12,7 +12,9 @@ export class App {
   constructor() {
     this.store = new WorksheetStore();
     this.submissionService = new SubmissionService();
-    this.teacherAuthService = new TeacherAuthService();
+    this.teacherAuthService = new TeacherAuthService({
+      submissionService: this.submissionService
+    });
     this.currentSheetId = 1;
     this.currentTab = 'worksheet'; // 'worksheet' | 'visualizer' | 'sandbox' | 'teacher'
     this.customSandboxCode = `numbers = [3, 8, 1, 6, 2]
@@ -435,20 +437,31 @@ print("Максимум:", max_val)`;
     }
   }
 
-  submitTeacherAuth() {
+  async submitTeacherAuth() {
     const pin = (this.dom.teacherPinInput.value || '').trim();
-    const res = this.teacherAuthService.loginWithPin(pin);
-    if (!res.success) {
-      if (this.dom.teacherAuthError) {
-        this.dom.teacherAuthError.style.display = 'block';
-        this.dom.teacherAuthError.textContent = res.error || 'Неверный PIN-код учителя';
-      }
-      if (this.dom.teacherPinInput) this.dom.teacherPinInput.focus();
-      return;
+    if (this.dom.btnSubmitTeacherAuth) {
+      this.dom.btnSubmitTeacherAuth.disabled = true;
+      this.dom.btnSubmitTeacherAuth.textContent = 'Проверка...';
     }
-    this.closeTeacherAuthModal();
-    this.updateTeacherAuthUI();
-    this.switchTab('teacher');
+    try {
+      const res = await this.teacherAuthService.loginWithPin(pin);
+      if (!res.success) {
+        if (this.dom.teacherAuthError) {
+          this.dom.teacherAuthError.style.display = 'block';
+          this.dom.teacherAuthError.textContent = res.error || 'Неверный PIN-код учителя';
+        }
+        if (this.dom.teacherPinInput) this.dom.teacherPinInput.focus();
+        return;
+      }
+      this.closeTeacherAuthModal();
+      this.updateTeacherAuthUI();
+      this.switchTab('teacher');
+    } finally {
+      if (this.dom.btnSubmitTeacherAuth) {
+        this.dom.btnSubmitTeacherAuth.disabled = false;
+        this.dom.btnSubmitTeacherAuth.textContent = 'Войти в кабинет';
+      }
+    }
   }
 
   updateTeacherAuthUI() {

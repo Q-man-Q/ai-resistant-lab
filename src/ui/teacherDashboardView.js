@@ -324,7 +324,7 @@ export class TeacherDashboardView {
     if (btnCancelChangePin) btnCancelChangePin.addEventListener('click', closePinModal);
 
     if (btnSaveChangePin) {
-      btnSaveChangePin.addEventListener('click', () => {
+      btnSaveChangePin.addEventListener('click', async () => {
         const oldPin = this.container.querySelector('#inputOldPin').value;
         const newPin = this.container.querySelector('#inputNewPin').value;
         const confirmPin = this.container.querySelector('#inputConfirmPin').value;
@@ -334,15 +334,23 @@ export class TeacherDashboardView {
           return;
         }
 
-        const res = this.teacherAuthService.changePin(oldPin, newPin, confirmPin);
-        if (!res.success) {
-          changePinError.style.display = 'block';
-          changePinError.textContent = res.error || 'Ошибка смены PIN-кода';
-          return;
-        }
+        btnSaveChangePin.disabled = true;
+        btnSaveChangePin.textContent = 'Сохранение...';
 
-        alert('✓ PIN-код учителя успешно обновлен!');
-        closePinModal();
+        try {
+          const res = await this.teacherAuthService.changePin(oldPin, newPin, confirmPin);
+          if (!res.success) {
+            changePinError.style.display = 'block';
+            changePinError.textContent = res.error || 'Ошибка смены PIN-кода';
+            return;
+          }
+
+          alert('✓ PIN-код учителя успешно обновлен (сохранен локально и в облаке Firebase)!');
+          closePinModal();
+        } finally {
+          btnSaveChangePin.disabled = false;
+          btnSaveChangePin.textContent = 'Сохранить новый PIN';
+        }
       });
     }
 

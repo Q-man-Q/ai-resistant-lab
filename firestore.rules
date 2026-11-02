@@ -30,6 +30,24 @@ service cloud.firestore {
     //   - Anonymous students can CREATE submissions without an account.
     //   - Only authenticated users (teachers) can READ (list/get), UPDATE, or DELETE submissions.
     //   - Default deny on all other document paths.
+    //
+    // ---------------------------------------------------------------
+    //
+    // Collection: settings
+    // Document ID: access
+    //
+    // Required Fields:
+    //   - teacherPin: string (4-30 characters) - Cloud PIN code for teacher authentication
+    //
+    // Optional Fields:
+    //   - updatedAt: string (<= 50 characters) or timestamp - Timestamp of last PIN update
+    //   - createdAt: string (<= 50 characters) or timestamp - Timestamp of PIN creation
+    //
+    // Access Model:
+    //   - Anyone can READ (/settings/access) to fetch the cloud teacher PIN during teacher login.
+    //   - CREATE is allowed if authenticated OR if document does not exist yet (bootstrap initialization).
+    //   - UPDATE and DELETE are strictly restricted to authenticated teachers (request.auth != null).
+    //   - Validates that teacherPin is a string between 4 and 30 characters.
     // ===============================================================
 
     // ===============================================================
@@ -89,9 +107,36 @@ service cloud.firestore {
              (!('rubric' in data) || data.rubric is map);
     }
 
+    function isValidAccessSettings(data) {
+      return hasRequiredFields(['teacherPin']) &&
+             hasOnlyAllowedFields(['teacherPin', 'updatedAt', 'createdAt']) &&
+             data.teacherPin is string &&
+             data.teacherPin.size() >= 4 &&
+             data.teacherPin.size() <= 30 &&
+             (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 50) || data.updatedAt is timestamp) &&
+             (!('createdAt' in data) || (data.createdAt is string && data.createdAt.size() <= 50) || data.createdAt is timestamp);
+    }
+
     // Default deny for all other document paths
     match /{document=**} {
       allow read, write: if false;
+    }
+
+    // Settings collection rules: Cloud teacher PIN and access configuration
+    match /settings/access {
+      // 1. Read: Allowed for anyone so client application can fetch the cloud teacher PIN during teacher login
+      allow read: if true;
+
+      // 2. Create: Allowed if authenticated or if document does not exist yet (bootstrap initialization)
+      allow create: if (request.auth != null || !exists(/databases/$(database)/documents/settings/access)) &&
+                       isValidAccessSettings(request.resource.data);
+
+      // 3. Update: Strictly restricted to authenticated teachers with valid PIN schema
+      allow update: if request.auth != null &&
+                       isValidAccessSettings(request.resource.data);
+
+      // 4. Delete: Strictly restricted to authenticated teachers
+      allow delete: if request.auth != null;
     }
 
     // Submissions collection rules
